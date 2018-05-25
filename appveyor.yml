@@ -3,6 +3,11 @@ version: 2.0.{build}
 configuration: Debug
 platform: Any CPU
 
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+\.\d+$/
+
 install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
 
