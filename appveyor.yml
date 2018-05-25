@@ -18,7 +18,7 @@ for:
       - master
   #skip_non_tags: true
   configuration: Release
-  version: 2.0.1.{revision}
+  #version: 2.0.1.{build}
   install:
     - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/denis-peshkov/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
   before_build: 
