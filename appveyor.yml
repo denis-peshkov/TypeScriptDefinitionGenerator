@@ -7,9 +7,9 @@ install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
 
 build_script:
-  - nuget restore #-Verbosity quiet
+  - nuget restore -Verbosity quiet
   # /t:restore
-  - msbuild /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+  - msbuild /t:restore /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
