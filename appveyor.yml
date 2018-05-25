@@ -1,20 +1,24 @@
 image: Visual Studio 2017
 version: 2.0.{build}
-configuration: Debug
 platform: Any CPU
 
-branches:
-  only:
-  #- master
-  - /master|^v\d+\.\d+\.\d+$/
-
-install:
-- ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
-
+configuration: Release
 build_script:
   - nuget restore -Verbosity quiet
   #- msbuild /t:restore
-  - msbuild /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+  - msbuild /p:configuration={configuration} /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
-after_test:
-  - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
+# here we are going to override common configuration
+for:
+
+# override settings for `master` branch
+-
+  branches:
+    only:
+      - master
+  configuration: Release
+  install:
+    - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
+  after_test:
+    - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
+
