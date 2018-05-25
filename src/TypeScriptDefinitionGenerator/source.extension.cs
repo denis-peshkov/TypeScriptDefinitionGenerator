@@ -7,12 +7,12 @@ namespace TypeScriptDefinitionGenerator
 {
     static class Vsix
     {
-        public const string Id = "5cb4e919-c9ff-4026-bd14-fd323a14fac7";
+        public const string Id = "5cb4e919-c9ff-4026-bd39-fd323a14fac7";
         public const string Name = "TypeScript Definition Generator";
         public const string Description = @"Creates and synchronizes TypeScript Definition files (d.ts) from C# model classes to build strongly typed web application where the server- and client-side models are in sync. Works on all .NET project types";
         public const string Language = "en-US";
         public const string Version = "2.0.1";
-        public const string Author = "Mads Kristensen, Lulus";
-        public const string Tags = "typescript, d.ts, model, dto";
+        public const string Author = "Mads Kristensen, Lulus, Denis Peshkov";
+        public const string Tags = "Code Generator, d.ts, dto, model, TypeScript, TypeScript generator";
     }
 }
