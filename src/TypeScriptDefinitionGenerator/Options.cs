@@ -14,6 +14,7 @@ namespace TypeScriptDefinitionGenerator
         internal const bool _defCamelCaseTypeNames = false;
         internal const bool _defClassInsteadOfInterface = false;
         internal const bool _defGlobalScope = false;
+        internal const bool _defExport = false;
         internal const bool _defWebEssentials2015 = true;
         internal const string _defModuleName = "Server.Dtos";
 
@@ -48,6 +49,12 @@ namespace TypeScriptDefinitionGenerator
         [Description("Controls whether to generate types in Global scope or wrapped in a module")]
         [DefaultValue(_defGlobalScope)]
         public bool GlobalScope { get; set; } = _defGlobalScope;
+
+        [Category("Settings")]
+        [DisplayName("Export elements")]
+        [Description("Controls whether to do export elements")]
+        [DefaultValue(_defExport)]
+        public bool Export { get; set; } = _defExport;
 
 
         [Category("Compatibilty")]
@@ -106,6 +113,14 @@ namespace TypeScriptDefinitionGenerator
             get
             {
                 return overrides != null ? overrides.GlobalScope : DtsPackage.Options.GlobalScope;
+            }
+        }
+
+        static public bool Export
+        {
+            get
+            {
+                return overrides != null ? overrides.Export : DtsPackage.Options.Export;
             }
         }
 
@@ -190,6 +205,9 @@ namespace TypeScriptDefinitionGenerator
 
         //        [JsonRequired]
         public bool GlobalScope { get; set; } = OptionsDialogPage._defGlobalScope;
+
+        //        [JsonRequired]
+        public bool Export { get; set; } = OptionsDialogPage._defExport;
 
         //        [JsonRequired]
         public bool WebEssentials2015 { get; set; } = OptionsDialogPage._defWebEssentials2015;

@@ -29,7 +29,8 @@ namespace TypeScriptDefinitionGenerator
 
                     if (io.IsEnum)
                     {
-                        sb.AppendLine("\tconst enum " + Utility.CamelCaseClassName(io.Name) + " {");
+                        string export = Options.Export ? "export " : string.Empty;
+                        sb.AppendLine("\t" + export + "const enum " + Utility.CamelCaseClassName(io.Name) + " {");
 
                         foreach (var p in io.Properties)
                         {
@@ -50,7 +51,8 @@ namespace TypeScriptDefinitionGenerator
                     else
                     {
                         string type = Options.ClassInsteadOfInterface ? "\tclass " : "\tinterface ";
-                        sb.Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
+                        string export = Options.Export ? "export " : string.Empty;
+                        sb.Append(export + type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
                         if (!string.IsNullOrEmpty(io.BaseName))
                         {
