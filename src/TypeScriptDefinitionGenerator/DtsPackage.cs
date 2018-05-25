@@ -10,7 +10,7 @@ using Tasks = System.Threading.Tasks;
 namespace TypeScriptDefinitionGenerator
 {
     [Guid(PackageGuids.guidDtsPackageString)]
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideLanguageEditorOptionPage(typeof(OptionsDialogPage), "TypeScript", null, "Generate d.ts", null, new[] { "d.ts" })]
