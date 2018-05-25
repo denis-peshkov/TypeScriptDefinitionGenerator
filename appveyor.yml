@@ -1,5 +1,5 @@
 image: Visual Studio 2017
-version: 2.0.0-{branch}-{build}
+version: 2.0.{build}
 configuration: Debug
 platform: Any CPU
 
@@ -7,7 +7,8 @@ install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
 
 build_script:
-  - nuget restore -Verbosity quiet
+  - nuget restore #-Verbosity quiet
+  # /t:restore
   - msbuild /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 after_test:
