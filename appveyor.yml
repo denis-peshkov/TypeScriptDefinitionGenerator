@@ -2,11 +2,11 @@ image: Visual Studio 2017
 version: 2.0.{build}
 platform: Any CPU
 
-configuration: Release
+configuration: Debug
 build_script:
   - nuget restore -Verbosity quiet
   #- msbuild /t:restore
-  - 'msbuild /p:configuration={configuration} /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m'
+  - msbuild /p:configuration=%configuration% /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 # here we are going to override common configuration
 for:
