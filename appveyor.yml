@@ -8,7 +8,7 @@ install:
 
 build_script:
   - nuget restore -Verbosity quiet
-  - msbuild /t:restore
+  #- msbuild /t:restore
   - msbuild /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 after_test:
