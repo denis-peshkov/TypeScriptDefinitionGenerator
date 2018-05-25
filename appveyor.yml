@@ -19,6 +19,8 @@ for:
   configuration: Release
   install:
     - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
+  before_build: 
+    - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
   after_test:
     - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
 
