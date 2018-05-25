@@ -8,8 +8,8 @@ install:
 
 build_script:
   - nuget restore -Verbosity quiet
-  # /t:restore
-  - msbuild /t:restore /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+  - msbuild /t:restore
+  - msbuild /p:configuration=Debug /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
 after_test:
   - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
