@@ -5,8 +5,8 @@ platform: Any CPU
 
 branches:
   only:
-  - master
-  - /^v\d+\.\d+\.\d+$/
+  #- master
+  - /master|^v\d+\.\d+\.\d+$/
 
 install:
 - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
