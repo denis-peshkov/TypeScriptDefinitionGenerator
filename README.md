@@ -9,8 +9,8 @@ https://github.com/madskristensen/TypeScriptDefinitionGenerator
 
 
 
-Download this extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=Lulus.5cb4e919-c9ff-4026-bd14-fd323a14fac7#overview)
-or get the [CI build](http://vsixgallery.com/extension/5cb4e919-c9ff-4026-bd14-fd323a14fac7/).
+Download this extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=peshkov.5cb4e919-c9ff-4026-bd39-fd323a14fac7#overview)
+or get the [CI build](http://vsixgallery.com/extension/5cb4e919-c9ff-4026-bd39-fd323a14fac7/).
 
 ---------------------------------------
 
