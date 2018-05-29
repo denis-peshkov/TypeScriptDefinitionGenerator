@@ -55,9 +55,9 @@ namespace TypeScriptDefinitionGenerator
                     }
                     else
                     {
-                        string type = Options.ClassInsteadOfInterface ? "\tclass " : "\tinterface ";
+                        string type = Options.ClassInsteadOfInterface ? "class " : "interface ";
                         string export = Options.Export ? "export " : string.Empty;
-                        sb.Append(export + type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
+                        sb.Append("\t").Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
                         if (!string.IsNullOrEmpty(io.BaseName))
                         {
