@@ -50,14 +50,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Generator\GenerationService.cs" />
-    <Compile Include="Generator\DtsGenerator.cs" />
-    <Compile Include="DtsPackage.cs" />
-    <Compile Include="DtsPackage1.cs">
+    <Compile Include="DtsPackage.g.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DtsPackage.vsct</DependentUpon>
     </Compile>
+    <Compile Include="Generator\GenerationService.cs" />
+    <Compile Include="Generator\DtsGenerator.cs" />
+    <Compile Include="DtsPackage.cs" />
     <Compile Include="Helpers\Telemetry.cs" />
     <Compile Include="Helpers\Utility.cs" />
     <Compile Include="Helpers\VSHelpers.cs" />
@@ -239,7 +239,7 @@
     <VSCTCompile Include="DtsPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <Generator>VsctGenerator</Generator>
-      <LastGenOutput>DtsPackage1.cs</LastGenOutput>
+      <LastGenOutput>DtsPackage.g.cs</LastGenOutput>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
