@@ -1,9 +1,22 @@
 ﻿using System.Globalization;
+using System.IO;
 
 namespace TypeScriptDefinitionGenerator.Helpers
 {
     internal static class Utility
     {
+        public static string GenerateFileName(string sourceFile)
+        {
+            if (Options.WebEssentials2015)
+            {
+                return sourceFile + Constants.FileExtension;
+            }
+            else
+            {
+                return Path.ChangeExtension(sourceFile, Constants.FileExtension);
+            }
+        }
+
         public static string CamelCaseClassName(string name)
         {
             if (Options.CamelCaseTypeNames)

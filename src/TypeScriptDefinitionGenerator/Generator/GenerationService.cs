@@ -6,6 +6,8 @@ using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Windows.Threading;
+using Microsoft.Internal.VisualStudio.PlatformUI;
+using TypeScriptDefinitionGenerator.Helpers;
 
 namespace TypeScriptDefinitionGenerator
 {
@@ -69,14 +71,7 @@ namespace TypeScriptDefinitionGenerator
 
         public static string GenerateFileName(string sourceFile)
         {
-            if (Options.WebEssentials2015)
-            {
-                return sourceFile + Constants.FileExtension;
-            }
-            else
-            {
-                return Path.ChangeExtension(sourceFile, Constants.FileExtension);
-            }
+            return Utility.GenerateFileName(sourceFile);
         }
 
         public static void CreateDtsFile(ProjectItem sourceItem)

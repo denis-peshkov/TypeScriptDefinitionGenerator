@@ -184,9 +184,13 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
+        public static void SetOptionsOverrides(OptionsOverride optionsOverride)
+        {
+            overrides = optionsOverride;
+        }
     }
 
-    internal class OptionsOverride
+    public class OptionsOverride
     {
         //        [JsonRequired]
         public bool CamelCaseEnumerationValues { get; set; } = OptionsDialogPage._defCamelCaseEnumerationValues;

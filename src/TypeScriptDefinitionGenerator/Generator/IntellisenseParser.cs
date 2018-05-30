@@ -13,17 +13,11 @@ namespace TypeScriptDefinitionGenerator
 {
     public static class IntellisenseParser
     {
-        private static string DefaultModuleName = Options.DefaultModuleName;
         private const string ModuleNameAttributeName = "TypeScriptModule";
         private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Project _project;
 
-        //internal static class Ext
-        //{
-        //    public const string TypeScript = ".d.ts";
-        //}
-
-        internal static IEnumerable<IntellisenseObject> ProcessFile(ProjectItem item, HashSet<CodeClass> underProcess = null)
+        public static IEnumerable<IntellisenseObject> ProcessFile(ProjectItem item, HashSet<CodeClass> underProcess = null)
         {
             if (item.FileCodeModel == null || item.ContainingProject == null)
                 return null;
@@ -239,7 +233,7 @@ namespace TypeScriptDefinitionGenerator
 
         private static string GetNamespace(CodeElements attrs)
         {
-            if (attrs == null) return DefaultModuleName;
+            if (attrs == null) return Options.DefaultModuleName;
 
             var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
                                     where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
@@ -248,7 +242,7 @@ namespace TypeScriptDefinitionGenerator
                                     where !string.IsNullOrWhiteSpace(v)
                                     select v;
 
-            return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
+            return namespaceFromAttr.FirstOrDefault() ?? Options.DefaultModuleName;
         }
 
         private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes, HashSet<string> references)
@@ -373,7 +367,7 @@ namespace TypeScriptDefinitionGenerator
         {
             for (short i = 0; i < projectItem.FileCount; i++)
             {
-                var fileName = GenerationService.GenerateFileName(projectItem.FileNames[i]);
+                var fileName = Utility.GenerateFileName(projectItem.FileNames[i]);
 
                 references.Add(fileName);
                 return true;
