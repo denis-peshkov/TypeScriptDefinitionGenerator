@@ -5,8 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Class2.cs.generated.d.ts">
-      <DependentUpon>Class2.cs</DependentUpon>
+    <None Update="Some.generated.d.ts">
+      <DependentUpon>Some.cs</DependentUpon>
+    </None>
+    <None Update="SomeClass.generated.d.ts">
+      <DependentUpon>SomeClass.cs</DependentUpon>
+    </None>
+    <None Update="SomeSomeClass.generated.d.ts">
+      <DependentUpon>SomeSomeClass.cs</DependentUpon>
     </None>
   </ItemGroup>
 

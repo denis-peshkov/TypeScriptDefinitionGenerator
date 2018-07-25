@@ -54,6 +54,14 @@ namespace TypeScriptDefinitionGenerator
             WriteOnOutputWindow(text, Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid);
         }
 
+        internal static void WriteOnBuildDebugWindow(string text)
+        {
+#if DEBUG
+            Console.WriteLine(text);
+            WriteOnOutputWindow(text, Microsoft.VisualStudio.VSConstants.OutputWindowPaneGuid.DebugPane_guid);
+#endif
+        }
+
         internal static void WriteOnOutputWindow(string text, Guid guidBuildOutput)
         {
             if (!text.EndsWith(Environment.NewLine))

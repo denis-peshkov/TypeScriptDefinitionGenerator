@@ -264,10 +264,10 @@ namespace TypeScriptDefinitionGenerator
 
             try
             {
-
                 var codeClass = effectiveTypeRef.CodeType as CodeClass2;
                 var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
                 var isPrimitive = IsPrimitive(effectiveTypeRef);
+                VSHelpers.WriteOnBuildDebugWindow($"###{effectiveTypeRef.CodeType.GetType().FullName}");
 
                 var result = new IntellisenseType
                 {
@@ -275,14 +275,36 @@ namespace TypeScriptDefinitionGenerator
                     IsDictionary = isDictionary,
                     CodeName = effectiveTypeRef.AsString
                 };
-                if (effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType && effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
+
+                VSHelpers.WriteOnBuildDebugWindow($"#{result.CodeName}#{result.TypeScriptName}#{effectiveTypeRef.AsString}#{effectiveTypeRef.AsFullName}#{effectiveTypeRef.CodeType}");
+                VSHelpers.WriteOnBuildDebugWindow($"##{effectiveTypeRef.TypeKind}##{vsCMTypeRef.vsCMTypeRefCodeType}##{effectiveTypeRef.CodeType.InfoLocation}##{vsCMInfoLocation.vsCMInfoLocationProject}");
+                if (effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType)
                 {
-                    result.ClientSideReferenceName = (codeClass != null && HasIntellisense(codeClass.ProjectItem, references) ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
-                                                     (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, references) ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
+                    if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
+                    {
+                        if (codeClass != null)
+                            HasIntellisense(codeClass.ProjectItem, references);
+                        if (codeEnum != null)
+                            HasIntellisense(codeEnum.ProjectItem, references);
+                    }
+
+                    result.ClientSideReferenceName = (codeClass != null ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
+                                                     (codeEnum != null ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
+                    //if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
+                    //{
+                    //    result.ClientSideReferenceName = (codeClass != null && HasIntellisense(codeClass.ProjectItem, references) ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
+                    //                                     (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, references) ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
+                    //}
+                    //if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationExternal)
+                    //{
+                    //    result.ClientSideReferenceName = (codeClass != null ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
+                    //                                     (codeEnum != null ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
+                    //}
+                    //                    VSHelpers.WriteOnOutputWindow($"@@{GetNamespace(codeEnum)}@{Utility.CamelCaseClassName(codeEnum.Name)}");
                 }
                 else result.ClientSideReferenceName = null;
 
-                if (!isPrimitive && codeClass != null && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
+                if (!isPrimitive && (codeClass != null || codeEnum != null) && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
                 {
                     traversedTypes.Add(effectiveTypeRef.CodeType.FullName);
                     result.Shape = GetProperties(effectiveTypeRef.CodeType.Members, traversedTypes, references).ToList();

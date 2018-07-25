@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ClassLibrary1;
+﻿using ClassLibrary1;
 
 namespace TypeScriptDefinitionGenerator.Tests
 {
     public class Class1
     {
-        public string Temp { get; set; }
+        public string StrField { get; set; }
 
-        public Mas Mas { get; set; }
+        public IntEnum IntEnumField { get; set; }
 
-        public Some Some { get; set; }
+        public SomeClass SomeClassField { get; set; }
+
+        public SomeEnum SomeEnumField { get; set; }
+
+        public SomeSomeClass SomeSomeClassField { get; set; }
+
     }
 
-    public enum Mas
+    public enum IntEnum
     {
         First,
         Next

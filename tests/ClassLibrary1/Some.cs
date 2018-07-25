@@ -1,6 +1,6 @@
 ﻿namespace ClassLibrary1
 {
-    public enum Some
+    public enum SomeEnum
     {
         This,
         That
