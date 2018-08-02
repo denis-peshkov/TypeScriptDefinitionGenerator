@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using TypeScriptDefinitionGenerator;
 
@@ -15,3 +16,5 @@ using TypeScriptDefinitionGenerator;
 
 [assembly: AssemblyVersion(Vsix.Version)]
 [assembly: AssemblyFileVersion(Vsix.Version)]
+
+[assembly: InternalsVisibleTo("TypeScriptDefinitionGenerator.Tests")]
