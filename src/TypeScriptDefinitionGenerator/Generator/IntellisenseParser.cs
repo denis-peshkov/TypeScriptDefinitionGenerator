@@ -17,7 +17,7 @@ namespace TypeScriptDefinitionGenerator
         private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Project _project;
 
-        public static IEnumerable<IntellisenseObject> ProcessFile(ProjectItem item, HashSet<CodeClass> underProcess = null)
+        internal static IEnumerable<IntellisenseObject> ProcessFile(ProjectItem item, HashSet<CodeClass> underProcess = null)
         {
             if (item.FileCodeModel == null || item.ContainingProject == null)
                 return null;
@@ -267,7 +267,7 @@ namespace TypeScriptDefinitionGenerator
                 var codeClass = effectiveTypeRef.CodeType as CodeClass2;
                 var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
                 var isPrimitive = IsPrimitive(effectiveTypeRef);
-                VSHelpers.WriteOnBuildDebugWindow($"###{effectiveTypeRef.CodeType.GetType().FullName}");
+                //VSHelpers.WriteOnBuildDebugWindow($"###{effectiveTypeRef.CodeType.GetType().FullName}");
 
                 var result = new IntellisenseType
                 {
@@ -276,31 +276,21 @@ namespace TypeScriptDefinitionGenerator
                     CodeName = effectiveTypeRef.AsString
                 };
 
-                VSHelpers.WriteOnBuildDebugWindow($"#{result.CodeName}#{result.TypeScriptName}#{effectiveTypeRef.AsString}#{effectiveTypeRef.AsFullName}#{effectiveTypeRef.CodeType}");
-                VSHelpers.WriteOnBuildDebugWindow($"##{effectiveTypeRef.TypeKind}##{vsCMTypeRef.vsCMTypeRefCodeType}##{effectiveTypeRef.CodeType.InfoLocation}##{vsCMInfoLocation.vsCMInfoLocationProject}");
+                //VSHelpers.WriteOnBuildDebugWindow($"#{result.CodeName}#{result.TypeScriptName}#{effectiveTypeRef.AsString}#{effectiveTypeRef.AsFullName}#{effectiveTypeRef.CodeType}");
+                //VSHelpers.WriteOnBuildDebugWindow($"##{effectiveTypeRef.TypeKind}##{vsCMTypeRef.vsCMTypeRefCodeType}##{effectiveTypeRef.CodeType.InfoLocation}##{vsCMInfoLocation.vsCMInfoLocationProject}");
                 if (effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType)
                 {
+                    var hasIntellisense = Options.IgnoreIntellisense;
                     if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
                     {
                         if (codeClass != null)
-                            HasIntellisense(codeClass.ProjectItem, references);
+                            hasIntellisense = HasIntellisense(codeClass.ProjectItem, references);
                         if (codeEnum != null)
-                            HasIntellisense(codeEnum.ProjectItem, references);
+                            hasIntellisense = HasIntellisense(codeEnum.ProjectItem, references);
                     }
 
-                    result.ClientSideReferenceName = (codeClass != null ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
-                                                     (codeEnum != null ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
-                    //if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
-                    //{
-                    //    result.ClientSideReferenceName = (codeClass != null && HasIntellisense(codeClass.ProjectItem, references) ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
-                    //                                     (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, references) ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
-                    //}
-                    //if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationExternal)
-                    //{
-                    //    result.ClientSideReferenceName = (codeClass != null ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
-                    //                                     (codeEnum != null ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
-                    //}
-                    //                    VSHelpers.WriteOnOutputWindow($"@@{GetNamespace(codeEnum)}@{Utility.CamelCaseClassName(codeEnum.Name)}");
+                    result.ClientSideReferenceName = (codeClass != null && hasIntellisense ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
+                                                     (codeEnum != null && hasIntellisense ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
                 }
                 else result.ClientSideReferenceName = null;
 

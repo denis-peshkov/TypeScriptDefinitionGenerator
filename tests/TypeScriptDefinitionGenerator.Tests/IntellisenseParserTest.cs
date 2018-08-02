@@ -48,10 +48,6 @@ namespace TypeScriptDefinitionGenerator.Tests
             ProjectItem item = worker.GetProjectItem(dte2.Solution, "Class1.cs");
 
             //Act
-            //string dts = GenerationService.ConvertToTypeScript(item);
-            //var res = Encoding.UTF8.GetBytes(dts);
-
-            //string dts = GenerationService.ConvertToTypeScript(item);
             Options.SetOptionsOverrides(new OptionsOverride()
             {
                 CamelCaseEnumerationValues = false,
@@ -64,6 +60,7 @@ namespace TypeScriptDefinitionGenerator.Tests
                 DefaultModuleName = "Server.Dtos",
                 Export = false,
                 GlobalScope = false,
+                IgnoreIntellisense = true,
             });
             var list = IntellisenseParser.ProcessFile(item).ToList();
 
