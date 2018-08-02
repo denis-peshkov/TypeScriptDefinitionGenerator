@@ -23,6 +23,7 @@ namespace TypeScriptDefinitionGenerator.Tests
         }
 
         [Test]
+        [Explicit("Can't be run on build server, some problems on build server")]
         public void HowToUseCodeModelSpike()
         {
             // get the DTE reference...
@@ -34,6 +35,7 @@ namespace TypeScriptDefinitionGenerator.Tests
         }
 
         [Test]
+        [Explicit("Can't be run on build server, some problems on build server")]
         public void _ShouldWorkProperly()
         {
             //Arrange
