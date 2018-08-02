@@ -12,6 +12,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TypeScriptDefinitionGenerator", "src\TypeScriptDefinitionGenerator\TypeScriptDefinitionGenerator.csproj", "{F8E2F6C6-880A-4C64-A9EE-0CF04F9C3CC6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TypeScriptDefinitionGenerator.Tests", "tests\TypeScriptDefinitionGenerator.Tests\TypeScriptDefinitionGenerator.Tests.csproj", "{5BCC614E-E6DD-4624-A05C-43CB8897262F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassLibrary1", "tests\ClassLibrary1\ClassLibrary1.csproj", "{4699A92D-640D-4528-AD93-5905AD307F72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{0D3148DE-5554-4F5A-A5D7-E5770FB9A174}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +28,14 @@ Global
 		{F8E2F6C6-880A-4C64-A9EE-0CF04F9C3CC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8E2F6C6-880A-4C64-A9EE-0CF04F9C3CC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8E2F6C6-880A-4C64-A9EE-0CF04F9C3CC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BCC614E-E6DD-4624-A05C-43CB8897262F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BCC614E-E6DD-4624-A05C-43CB8897262F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BCC614E-E6DD-4624-A05C-43CB8897262F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BCC614E-E6DD-4624-A05C-43CB8897262F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4699A92D-640D-4528-AD93-5905AD307F72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4699A92D-640D-4528-AD93-5905AD307F72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4699A92D-640D-4528-AD93-5905AD307F72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4699A92D-640D-4528-AD93-5905AD307F72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

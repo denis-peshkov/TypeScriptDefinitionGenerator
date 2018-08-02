@@ -11,17 +11,11 @@ using TypeScriptDefinitionGenerator.Helpers;
 
 namespace TypeScriptDefinitionGenerator
 {
-    public static class IntellisenseParser
+    internal static class IntellisenseParser
     {
-        private static string DefaultModuleName = Options.DefaultModuleName;
         private const string ModuleNameAttributeName = "TypeScriptModule";
         private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Project _project;
-
-        //internal static class Ext
-        //{
-        //    public const string TypeScript = ".d.ts";
-        //}
 
         internal static IEnumerable<IntellisenseObject> ProcessFile(ProjectItem item, HashSet<CodeClass> underProcess = null)
         {
@@ -239,7 +233,7 @@ namespace TypeScriptDefinitionGenerator
 
         private static string GetNamespace(CodeElements attrs)
         {
-            if (attrs == null) return DefaultModuleName;
+            if (attrs == null) return Options.DefaultModuleName;
 
             var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
                                     where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
@@ -248,7 +242,7 @@ namespace TypeScriptDefinitionGenerator
                                     where !string.IsNullOrWhiteSpace(v)
                                     select v;
 
-            return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
+            return namespaceFromAttr.FirstOrDefault() ?? Options.DefaultModuleName;
         }
 
         private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes, HashSet<string> references)
@@ -270,10 +264,10 @@ namespace TypeScriptDefinitionGenerator
 
             try
             {
-
                 var codeClass = effectiveTypeRef.CodeType as CodeClass2;
                 var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
                 var isPrimitive = IsPrimitive(effectiveTypeRef);
+                //VSHelpers.WriteOnBuildDebugWindow($"###{effectiveTypeRef.CodeType.GetType().FullName}");
 
                 var result = new IntellisenseType
                 {
@@ -281,14 +275,26 @@ namespace TypeScriptDefinitionGenerator
                     IsDictionary = isDictionary,
                     CodeName = effectiveTypeRef.AsString
                 };
-                if (effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType && effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
+
+                //VSHelpers.WriteOnBuildDebugWindow($"#{result.CodeName}#{result.TypeScriptName}#{effectiveTypeRef.AsString}#{effectiveTypeRef.AsFullName}#{effectiveTypeRef.CodeType}");
+                //VSHelpers.WriteOnBuildDebugWindow($"##{effectiveTypeRef.TypeKind}##{vsCMTypeRef.vsCMTypeRefCodeType}##{effectiveTypeRef.CodeType.InfoLocation}##{vsCMInfoLocation.vsCMInfoLocationProject}");
+                if (effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType)
                 {
-                    result.ClientSideReferenceName = (codeClass != null && HasIntellisense(codeClass.ProjectItem, references) ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
-                                                     (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, references) ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
+                    var hasIntellisense = Options.IgnoreIntellisense;
+                    if (effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject)
+                    {
+                        if (codeClass != null)
+                            hasIntellisense = HasIntellisense(codeClass.ProjectItem, references);
+                        if (codeEnum != null)
+                            hasIntellisense = HasIntellisense(codeEnum.ProjectItem, references);
+                    }
+
+                    result.ClientSideReferenceName = (codeClass != null && hasIntellisense ? (GetNamespace(codeClass) + "." + Utility.CamelCaseClassName(GetClassName(codeClass))) : null) ??
+                                                     (codeEnum != null && hasIntellisense ? (GetNamespace(codeEnum) + "." + Utility.CamelCaseClassName(codeEnum.Name)) : null);
                 }
                 else result.ClientSideReferenceName = null;
 
-                if (!isPrimitive && codeClass != null && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
+                if (!isPrimitive && (codeClass != null || codeEnum != null) && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
                 {
                     traversedTypes.Add(effectiveTypeRef.CodeType.FullName);
                     result.Shape = GetProperties(effectiveTypeRef.CodeType.Members, traversedTypes, references).ToList();
@@ -373,7 +379,7 @@ namespace TypeScriptDefinitionGenerator
         {
             for (short i = 0; i < projectItem.FileCount; i++)
             {
-                var fileName = GenerationService.GenerateFileName(projectItem.FileNames[i]);
+                var fileName = Utility.GenerateFileName(projectItem.FileNames[i]);
 
                 references.Add(fileName);
                 return true;

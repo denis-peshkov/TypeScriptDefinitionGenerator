@@ -12,11 +12,14 @@ namespace TypeScriptDefinitionGenerator
         internal const bool _defCamelCaseEnumerationValues = false;
         internal const bool _defCamelCasePropertyNames = true;
         internal const bool _defCamelCaseTypeNames = false;
+
+        internal const bool _defWebEssentials2015 = false;
+
         internal const bool _defClassInsteadOfInterface = false;
-        internal const bool _defGlobalScope = false;
-        internal const bool _defExport = false;
-        internal const bool _defWebEssentials2015 = true;
         internal const string _defModuleName = "Server.Dtos";
+        internal const bool _defExport = false;
+        internal const bool _defGlobalScope = false;
+        internal const bool _defIgnoreIntellisense = true;
 
         [Category("Casing")]
         [DisplayName("Camel case enum values")]
@@ -56,7 +59,12 @@ namespace TypeScriptDefinitionGenerator
         [DefaultValue(_defExport)]
         public bool Export { get; set; } = _defExport;
 
-
+        [Category("Settings")]
+        [DisplayName("Ignore intellisense")]
+        [Description("Ignore intellisense for client side reference names")]
+        [DefaultValue(_defIgnoreIntellisense)]
+        public bool IgnoreIntellisense { get; set; } = _defIgnoreIntellisense;
+        
         [Category("Compatibilty")]
         [DisplayName("Web Esentials 2015 file names")]
         [Description("Web Essentials 2015 format is <filename>.cs.d.ts instead of <filename>.d.ts")]
@@ -68,7 +76,7 @@ namespace TypeScriptDefinitionGenerator
     {
         const string OVERRIDE_FILE_NAME = "tsdefgen.json";
         static OptionsOverride overrides { get; set; } = null;
-        static public bool CamelCaseEnumerationValues
+        public static bool CamelCaseEnumerationValues
         {
             get
             {
@@ -76,7 +84,7 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        static public bool CamelCasePropertyNames
+        public static bool CamelCasePropertyNames
         {
             get
             {
@@ -84,15 +92,15 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        static public bool CamelCaseTypeNames
+        public static bool CamelCaseTypeNames
         {
             get
             {
                 return overrides != null ? overrides.CamelCaseTypeNames : DtsPackage.Options.CamelCaseTypeNames;
             }
         }
-        //todo:设置为服务器命名空间
-        static public string DefaultModuleName
+        //todo: set to server namespace
+        public static string DefaultModuleName
         {
             get
             {
@@ -100,7 +108,7 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        static public bool ClassInsteadOfInterface
+        public static bool ClassInsteadOfInterface
         {
             get
             {
@@ -108,7 +116,7 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        static public bool GlobalScope
+        public static bool GlobalScope
         {
             get
             {
@@ -116,7 +124,7 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        static public bool Export
+        public static bool Export
         {
             get
             {
@@ -124,7 +132,15 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        static public bool WebEssentials2015
+        public static bool IgnoreIntellisense
+        {
+            get
+            {
+                return overrides != null ? overrides.IgnoreIntellisense : DtsPackage.Options.IgnoreIntellisense;
+            }
+        }
+
+        public static bool WebEssentials2015
         {
             get
             {
@@ -184,6 +200,10 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
+        internal static void SetOptionsOverrides(OptionsOverride optionsOverride)
+        {
+            overrides = optionsOverride;
+        }
     }
 
     internal class OptionsOverride
@@ -208,6 +228,9 @@ namespace TypeScriptDefinitionGenerator
 
         //        [JsonRequired]
         public bool Export { get; set; } = OptionsDialogPage._defExport;
+
+        //        [JsonRequired]
+        public bool IgnoreIntellisense { get; set; } = OptionsDialogPage._defIgnoreIntellisense;
 
         //        [JsonRequired]
         public bool WebEssentials2015 { get; set; } = OptionsDialogPage._defWebEssentials2015;

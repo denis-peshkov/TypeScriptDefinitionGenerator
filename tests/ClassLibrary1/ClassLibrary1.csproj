@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Some.generated.d.ts">
+      <DependentUpon>Some.cs</DependentUpon>
+    </None>
+    <None Update="SomeClass.generated.d.ts">
+      <DependentUpon>SomeClass.cs</DependentUpon>
+    </None>
+    <None Update="SomeSomeClass.generated.d.ts">
+      <DependentUpon>SomeSomeClass.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
+</Project>

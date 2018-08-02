@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using TypeScriptDefinitionGenerator.Helpers;
 using Tasks = System.Threading.Tasks;
 
 namespace TypeScriptDefinitionGenerator
@@ -66,7 +67,7 @@ namespace TypeScriptDefinitionGenerator
             {
                 if (_item.ContainingProject.IsKind(ProjectTypes.DOTNET_Core, ProjectTypes.ASPNET_5, ProjectTypes.WEBSITE_PROJECT))
                 {
-                    string dtsFile = GenerationService.GenerateFileName(_item.FileNames[1]);
+                    string dtsFile = Utility.GenerateFileName(_item.FileNames[1]);
                     button.Checked = File.Exists(dtsFile);
                 }
                 else
@@ -84,7 +85,7 @@ namespace TypeScriptDefinitionGenerator
             // .NET Core and Website projects
             if (_item.ContainingProject.IsKind(ProjectTypes.DOTNET_Core, ProjectTypes.ASPNET_5, ProjectTypes.WEBSITE_PROJECT))
             {
-                string dtsFile = GenerationService.GenerateFileName(_item.FileNames[1]);
+                string dtsFile = Utility.GenerateFileName(_item.FileNames[1]);
                 bool synOn = File.Exists(dtsFile);
 
                 if (synOn)
