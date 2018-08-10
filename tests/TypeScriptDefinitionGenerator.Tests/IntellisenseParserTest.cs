@@ -60,7 +60,6 @@ namespace TypeScriptDefinitionGenerator.Tests
 
                 ClassInsteadOfInterface = false,
                 DefaultModuleName = "Server.Dtos",
-                Export = false,
                 DeclareModule = true,
                 IgnoreIntellisense = true,
             });
