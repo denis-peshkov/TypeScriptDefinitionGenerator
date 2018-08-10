@@ -17,8 +17,7 @@ namespace TypeScriptDefinitionGenerator
 
         internal const bool _defClassInsteadOfInterface = false;
         internal const string _defModuleName = "Server.Dtos";
-        internal const bool _defExport = false;
-        internal const bool _defGlobalScope = false;
+        internal const bool _defDeclareModule = true;
         internal const bool _defIgnoreIntellisense = true;
 
         [Category("Casing")]
@@ -35,6 +34,12 @@ namespace TypeScriptDefinitionGenerator
         [DisplayName("Camel case type names")]
         [DefaultValue(_defCamelCaseTypeNames)]
         public bool CamelCaseTypeNames { get; set; } = _defCamelCaseTypeNames;
+        
+        [Category("Compatibilty")]
+        [DisplayName("Web Essentials 2015 file names")]
+        [Description("Web Essentials 2015 format is <filename>.cs.d.ts instead of <filename>.d.ts")]
+        [DefaultValue(_defWebEssentials2015)]
+        public bool WebEssentials2015 { get; set; } = _defWebEssentials2015;
 
         [Category("Settings")]
         [DisplayName("Default Module name")]
@@ -48,28 +53,16 @@ namespace TypeScriptDefinitionGenerator
         public bool ClassInsteadOfInterface { get; set; } = _defClassInsteadOfInterface;
 
         [Category("Settings")]
-        [DisplayName("Generate in global scope")]
-        [Description("Controls whether to generate types in Global scope or wrapped in a module")]
-        [DefaultValue(_defGlobalScope)]
-        public bool GlobalScope { get; set; } = _defGlobalScope;
-
-        [Category("Settings")]
-        [DisplayName("Export elements")]
-        [Description("Controls whether to do export elements")]
-        [DefaultValue(_defExport)]
-        public bool Export { get; set; } = _defExport;
+        [DisplayName("Declare module")]
+        [Description("Controls whether to generate types in declared module or without one, but with export")]
+        [DefaultValue(_defDeclareModule)]
+        public bool DeclareModule { get; set; } = _defDeclareModule;
 
         [Category("Settings")]
         [DisplayName("Ignore intellisense")]
         [Description("Ignore intellisense for client side reference names")]
         [DefaultValue(_defIgnoreIntellisense)]
         public bool IgnoreIntellisense { get; set; } = _defIgnoreIntellisense;
-        
-        [Category("Compatibilty")]
-        [DisplayName("Web Esentials 2015 file names")]
-        [Description("Web Essentials 2015 format is <filename>.cs.d.ts instead of <filename>.d.ts")]
-        [DefaultValue(_defWebEssentials2015)]
-        public bool WebEssentials2015 { get; set; } = _defWebEssentials2015;
     }
 
     public class Options
@@ -116,19 +109,11 @@ namespace TypeScriptDefinitionGenerator
             }
         }
 
-        public static bool GlobalScope
+        public static bool DeclareModule
         {
             get
             {
-                return overrides != null ? overrides.GlobalScope : DtsPackage.Options.GlobalScope;
-            }
-        }
-
-        public static bool Export
-        {
-            get
-            {
-                return overrides != null ? overrides.Export : DtsPackage.Options.Export;
+                return overrides != null ? overrides.DeclareModule : DtsPackage.Options.DeclareModule;
             }
         }
 
@@ -224,10 +209,7 @@ namespace TypeScriptDefinitionGenerator
         public bool ClassInsteadOfInterface { get; set; } = OptionsDialogPage._defClassInsteadOfInterface;
 
         //        [JsonRequired]
-        public bool GlobalScope { get; set; } = OptionsDialogPage._defGlobalScope;
-
-        //        [JsonRequired]
-        public bool Export { get; set; } = OptionsDialogPage._defExport;
+        public bool DeclareModule { get; set; } = OptionsDialogPage._defDeclareModule;
 
         //        [JsonRequired]
         public bool IgnoreIntellisense { get; set; } = OptionsDialogPage._defIgnoreIntellisense;

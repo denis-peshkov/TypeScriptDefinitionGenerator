@@ -61,7 +61,7 @@ namespace TypeScriptDefinitionGenerator.Tests
                 ClassInsteadOfInterface = false,
                 DefaultModuleName = "Server.Dtos",
                 Export = false,
-                GlobalScope = false,
+                DeclareModule = true,
                 IgnoreIntellisense = true,
             });
             var list = IntellisenseParser.ProcessFile(item).ToList();

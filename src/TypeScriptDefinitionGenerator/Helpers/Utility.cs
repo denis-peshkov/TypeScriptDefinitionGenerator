@@ -7,14 +7,19 @@ namespace TypeScriptDefinitionGenerator.Helpers
     {
         public static string GenerateFileName(string sourceFile)
         {
+            return Path.ChangeExtension(sourceFile, GetDefaultExtension(Path.GetExtension(sourceFile)));
+        }
+
+        public static string GetDefaultExtension(string originalExt)
+        {
+            string declaredExt = Options.DeclareModule ? ".d" : string.Empty;
+            string ext = $".generated{declaredExt}.ts";
+
             if (Options.WebEssentials2015)
             {
-                return sourceFile + Constants.FileExtension;
+                return originalExt + ext;
             }
-            else
-            {
-                return Path.ChangeExtension(sourceFile, Constants.FileExtension);
-            }
+            return ext;
         }
 
         public static string CamelCaseClassName(string name)

@@ -33,18 +33,13 @@ namespace TypeScriptDefinitionGenerator
         /// </summary>
         public IEnumerable<IntellisenseProperty> Shape { get; set; }
 
-        public bool IsKnownType
-        {
-            get { return TypeScriptName != "any"; }
-        }
+        public bool IsKnownType { get { return TypeScriptName != "any"; } }
         
         public string TypeScriptName
         {
             get
             {
-                if (IsDictionary)
-                    return GetKVPTypes();
-                return GetTargetName(CodeName, false);
+                return IsDictionary ? GetKVPTypes() : GetTargetName(CodeName, false);
             }
         }
 
