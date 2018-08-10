@@ -82,8 +82,7 @@ namespace TypeScriptDefinitionGenerator
             if (trimedValue.Length > 0) return trimedValue;
             return "0";
         }
-
-
+        
         private static void WriteTypeScriptComment(IntellisenseProperty p, StringBuilder sb, string prefix)
         {
             if (string.IsNullOrEmpty(p.Summary)) return;
