@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using TypeScriptDefinitionGenerator.Helpers;
 
 namespace TypeScriptDefinitionGenerator
 {
@@ -17,14 +18,7 @@ namespace TypeScriptDefinitionGenerator
 
         public override string GetDefaultExtension()
         {
-            if (Options.WebEssentials2015)
-            {
-                return this.originalExt + Constants.FileExtension;
-            }
-            else
-            {
-                return Constants.FileExtension;
-            }
+            return Utility.GetDefaultExtension(this.originalExt);
         }
 
         protected override byte[] GenerateCode(string inputFileName, string inputFileContent)

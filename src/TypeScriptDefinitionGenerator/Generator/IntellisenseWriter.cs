@@ -22,42 +22,32 @@ namespace TypeScriptDefinitionGenerator
 
             foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
-                if (!Options.GlobalScope)
+                if (Options.DeclareModule)
                 {
                     sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
                 }
 
+                string export = !Options.DeclareModule ? "export " : string.Empty;
+                string prefixModule = Options.DeclareModule ? "\t" : String.Empty;
+
                 foreach (IntellisenseObject io in ns)
                 {
                     if (!string.IsNullOrEmpty(io.Summary))
-                        sb.AppendLine("\t/** " + _whitespaceTrimmer.Replace(io.Summary, "") + " */");
+                        sb.Append(prefixModule).AppendLine("/** " + _whitespaceTrimmer.Replace(io.Summary, "") + " */");
 
                     if (io.IsEnum)
                     {
-                        string export = Options.Export ? "export " : string.Empty;
-                        sb.AppendLine("\t" + export + "const enum " + Utility.CamelCaseClassName(io.Name) + " {");
+                        string type = "enum ";
+                        sb.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
-                        foreach (var p in io.Properties)
-                        {
-                            WriteTypeScriptComment(p, sb);
-
-                            if (p.InitExpression != null)
-                            {
-                                sb.AppendLine("\t\t" + Utility.CamelCaseEnumValue(p.Name) + " = " + CleanEnumInitValue(p.InitExpression) + ",");
-                            }
-                            else
-                            {
-                                sb.AppendLine("\t\t" + Utility.CamelCaseEnumValue(p.Name) + ",");
-                            }
-                        }
-
-                        sb.AppendLine("\t}");
+                        sb.AppendLine("{");
+                        WriteTSEnumDefinition(sb, prefixModule + "\t", io.Properties);
+                        sb.Append(prefixModule).AppendLine("}");
                     }
                     else
                     {
                         string type = Options.ClassInsteadOfInterface ? "class " : "interface ";
-                        string export = Options.Export ? "export " : string.Empty;
-                        sb.Append("\t").Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
+                        sb.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
                         if (!string.IsNullOrEmpty(io.BaseName))
                         {
@@ -69,12 +59,13 @@ namespace TypeScriptDefinitionGenerator
                             sb.Append(Utility.CamelCaseClassName(io.BaseName)).Append(" ");
                         }
 
-                        WriteTSInterfaceDefinition(sb, "\t", io.Properties);
-                        sb.AppendLine();
+                        sb.AppendLine("{");
+                        WriteTSInterfaceDefinition(sb, prefixModule + "\t", io.Properties);
+                        sb.Append(prefixModule).AppendLine("}");
                     }
                 }
 
-                if (!Options.GlobalScope)
+                if (Options.DeclareModule)
                 {
                     sb.AppendLine("}");
                 }
@@ -91,36 +82,48 @@ namespace TypeScriptDefinitionGenerator
             if (trimedValue.Length > 0) return trimedValue;
             return "0";
         }
-
-
-        private static void WriteTypeScriptComment(IntellisenseProperty p, StringBuilder sb)
+        
+        private static void WriteTypeScriptComment(IntellisenseProperty p, StringBuilder sb, string prefix)
         {
             if (string.IsNullOrEmpty(p.Summary)) return;
-            sb.AppendLine("\t\t/** " + _whitespaceTrimmer.Replace(p.Summary, "") + " */");
+            sb.Append(prefix).AppendLine("/** " + _whitespaceTrimmer.Replace(p.Summary, "") + " */");
         }
 
-        private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix,
-            IEnumerable<IntellisenseProperty> props)
+        private static void WriteTSEnumDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
         {
-            sb.AppendLine("{");
-
             foreach (var p in props)
             {
-                WriteTypeScriptComment(p, sb);
-                sb.AppendFormat("{0}\t{1}: ", prefix, Utility.CamelCasePropertyName(p.NameWithOption));
+                WriteTypeScriptComment(p, sb, prefix);
+
+                if (p.InitExpression != null)
+                {
+                    sb.AppendLine(prefix + Utility.CamelCaseEnumValue(p.Name) + " = " + CleanEnumInitValue(p.InitExpression) + ",");
+                }
+                else
+                {
+                    sb.AppendLine(prefix + Utility.CamelCaseEnumValue(p.Name) + ",");
+                }
+            }
+
+        }
+
+        private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
+        {
+            foreach (var p in props)
+            {
+                WriteTypeScriptComment(p, sb, prefix);
+                sb.AppendFormat("{0}{1}: ", prefix, Utility.CamelCasePropertyName(p.NameWithOption));
 
                 if (p.Type.IsKnownType) sb.Append(p.Type.TypeScriptName);
                 else
                 {
                     if (p.Type.Shape == null) sb.Append("any");
-                    else WriteTSInterfaceDefinition(sb, prefix + "\t", p.Type.Shape);
+                    else WriteTSInterfaceDefinition(sb, prefix, p.Type.Shape);
                 }
                 if (p.Type.IsArray) sb.Append("[]");
 
                 sb.AppendLine(";");
             }
-
-            sb.Append(prefix).Append("}");
         }
     }
 }
