@@ -47,6 +47,7 @@ namespace TypeScriptDefinitionGenerator
 
             return new HashSet<IntellisenseObject>(list);
         }
+
         private static void ProcessElement(CodeElement element, List<IntellisenseObject> list, HashSet<CodeClass> underProcess)
         {
             if (element.Kind == vsCMElement.vsCMElementEnum)
@@ -95,9 +96,8 @@ namespace TypeScriptDefinitionGenerator
 
         private static bool ShouldProcess(CodeElement member)
         {
-            return
-                    member.Kind == vsCMElement.vsCMElementClass
-                    || member.Kind == vsCMElement.vsCMElementEnum;
+            return member.Kind == vsCMElement.vsCMElementClass ||
+                   member.Kind == vsCMElement.vsCMElementEnum;
         }
 
         private static void ProcessEnum(CodeEnum element, List<IntellisenseObject> list)
@@ -204,46 +204,65 @@ namespace TypeScriptDefinitionGenerator
 
         private static string GetClassName(CodeClass cc)
         {
-            return GetDataContractName(cc, "Name") ?? cc.Name;
+            return cc.Name;
+
+            // return GetDataContractName(cc, "Name") ?? cc.Name;
         }
 
         private static string GetNamespace(CodeClass cc)
         {
-            return GetDataContractName(cc, "Namespace") ?? GetNamespace(cc.Attributes);
+            if (!Options.UseNamespace)
+                return Options.DefaultModuleName;
+
+            return cc == null
+                ? Options.DefaultModuleName
+                : cc.Namespace.FullName;
+
+            //return GetDataContractName(cc, "Namespace") ?? GetNamespace(cc.Attributes);
         }
 
-        private static string GetDataContractName(CodeClass cc, string attrName)
+        private static string GetNamespace(CodeEnum cc)
         {
-            var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
+            if (!Options.UseNamespace)
+                return Options.DefaultModuleName;
 
-            if (!dataContractAttribute.Any())
-                return null;
+            return cc == null
+                ? Options.DefaultModuleName
+                : cc.Namespace.FullName;
 
-            string name = null;
-            var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
-                           .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
-
-            if (keyValues.ContainsKey(attrName))
-                name = keyValues[attrName];
-
-            return name;
+            //return GetNamespace(cc.Attributes);
         }
 
-        private static string GetNamespace(CodeEnum cc) { return GetNamespace(cc.Attributes); }
+        //private static string GetDataContractName(CodeClass cc, string attrName)
+        //{
+        //    var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
 
-        private static string GetNamespace(CodeElements attrs)
-        {
-            if (attrs == null) return Options.DefaultModuleName;
+        //    if (!dataContractAttribute.Any())
+        //        return null;
 
-            var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
-                                    where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
-                                    from arg in a.Arguments.Cast<CodeAttributeArgument>()
-                                    let v = (arg.Value ?? "").Trim('\"')
-                                    where !string.IsNullOrWhiteSpace(v)
-                                    select v;
+        //    string name = null;
+        //    var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
+        //                   .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
 
-            return namespaceFromAttr.FirstOrDefault() ?? Options.DefaultModuleName;
-        }
+        //    if (keyValues.ContainsKey(attrName))
+        //        name = keyValues[attrName];
+
+        //    return name;
+        //}
+
+        //private static string GetNamespace(CodeElements attrs)
+        //{
+        //    if (attrs == null || attrs.Count == 0) return Options.DefaultModuleName;
+
+        //    var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
+        //                            where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
+        //                            from arg in a.Arguments.Cast<CodeAttributeArgument>()
+        //                            let v = (arg.Value ?? "").Trim('\"')
+        //                            where !string.IsNullOrWhiteSpace(v)
+        //                            select v;
+
+        //    return namespaceFromAttr.FirstOrDefault() ?? Options.DefaultModuleName;
+        //}
 
         private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes, HashSet<string> references)
         {
@@ -261,7 +280,7 @@ namespace TypeScriptDefinitionGenerator
             }
 
             string typeName = effectiveTypeRef.AsFullName;
-
+            
             try
             {
                 var codeClass = effectiveTypeRef.CodeType as CodeClass2;

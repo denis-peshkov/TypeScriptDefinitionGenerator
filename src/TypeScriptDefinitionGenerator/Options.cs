@@ -17,6 +17,7 @@ namespace TypeScriptDefinitionGenerator
 
         internal const bool _defClassInsteadOfInterface = false;
         internal const string _defModuleName = "Server.Dtos";
+        internal const bool _defUseNamespace = true;
         internal const bool _defDeclareModule = true;
         internal const bool _defIgnoreIntellisense = true;
 
@@ -34,7 +35,7 @@ namespace TypeScriptDefinitionGenerator
         [DisplayName("Camel case type names")]
         [DefaultValue(_defCamelCaseTypeNames)]
         public bool CamelCaseTypeNames { get; set; } = _defCamelCaseTypeNames;
-        
+
         [Category("Compatibilty")]
         [DisplayName("Web Essentials 2015 file names")]
         [Description("Web Essentials 2015 format is <filename>.cs.d.ts instead of <filename>.d.ts")]
@@ -45,6 +46,11 @@ namespace TypeScriptDefinitionGenerator
         [DisplayName("Default Module name")]
         [Description("Set the top-level module name for the generated .d.ts file. Default is \"Server.Dtos\"")]
         public string DefaultModuleName { get; set; } = _defModuleName;
+
+        [Category("Settings")]
+        [DisplayName("Use Namespace")]
+        [Description("Use Namespace by default, otherwise \"Default Module name\" will be taken.")]
+        public bool UseNamespace { get; set; } = _defUseNamespace;
 
         [Category("Settings")]
         [DisplayName("Class instead of Interface")]
@@ -67,71 +73,27 @@ namespace TypeScriptDefinitionGenerator
 
     public class Options
     {
-        const string OVERRIDE_FILE_NAME = "tsdefgen.json";
-        static OptionsOverride overrides { get; set; } = null;
-        public static bool CamelCaseEnumerationValues
-        {
-            get
-            {
-                return overrides != null ? overrides.CamelCaseEnumerationValues : DtsPackage.Options.CamelCaseEnumerationValues;
-            }
-        }
+        private const string OVERRIDE_FILE_NAME = "tsdefgen.json";
 
-        public static bool CamelCasePropertyNames
-        {
-            get
-            {
-                return overrides != null ? overrides.CamelCasePropertyNames : DtsPackage.Options.CamelCasePropertyNames;
-            }
-        }
+        private static OptionsOverride overrides { get; set; } = null;
 
-        public static bool CamelCaseTypeNames
-        {
-            get
-            {
-                return overrides != null ? overrides.CamelCaseTypeNames : DtsPackage.Options.CamelCaseTypeNames;
-            }
-        }
-        //todo: set to server namespace
-        public static string DefaultModuleName
-        {
-            get
-            {
-                return overrides != null ? overrides.DefaultModuleName : DtsPackage.Options.DefaultModuleName;
-            }
-        }
+        public static bool CamelCaseEnumerationValues => overrides?.CamelCaseEnumerationValues ?? DtsPackage.Options.CamelCaseEnumerationValues;
 
-        public static bool ClassInsteadOfInterface
-        {
-            get
-            {
-                return overrides != null ? overrides.ClassInsteadOfInterface : DtsPackage.Options.ClassInsteadOfInterface;
-            }
-        }
+        public static bool CamelCasePropertyNames => overrides?.CamelCasePropertyNames ?? DtsPackage.Options.CamelCasePropertyNames;
 
-        public static bool DeclareModule
-        {
-            get
-            {
-                return overrides != null ? overrides.DeclareModule : DtsPackage.Options.DeclareModule;
-            }
-        }
+        public static bool CamelCaseTypeNames => overrides?.CamelCaseTypeNames ?? DtsPackage.Options.CamelCaseTypeNames;
 
-        public static bool IgnoreIntellisense
-        {
-            get
-            {
-                return overrides != null ? overrides.IgnoreIntellisense : DtsPackage.Options.IgnoreIntellisense;
-            }
-        }
+        public static string DefaultModuleName => overrides?.DefaultModuleName ?? DtsPackage.Options.DefaultModuleName;
 
-        public static bool WebEssentials2015
-        {
-            get
-            {
-                return overrides != null ? overrides.WebEssentials2015 : DtsPackage.Options.WebEssentials2015;
-            }
-        }
+        public static bool UseNamespace => overrides?.UseNamespace ?? DtsPackage.Options.UseNamespace;
+
+        public static bool ClassInsteadOfInterface => overrides?.ClassInsteadOfInterface ?? DtsPackage.Options.ClassInsteadOfInterface;
+
+        public static bool DeclareModule => overrides?.DeclareModule ?? DtsPackage.Options.DeclareModule;
+
+        public static bool IgnoreIntellisense => overrides?.IgnoreIntellisense ?? DtsPackage.Options.IgnoreIntellisense;
+
+        public static bool WebEssentials2015 => overrides?.WebEssentials2015 ?? DtsPackage.Options.WebEssentials2015;
 
         public static void ReadOptionOverrides(ProjectItem sourceItem, bool display = true)
         {
@@ -141,7 +103,7 @@ namespace TypeScriptDefinitionGenerator
 
             foreach (ProjectItem item in proj.ProjectItems)
             {
-                if (item.Name.ToLower() == OVERRIDE_FILE_NAME.ToLower())
+                if (string.Equals(item.Name, OVERRIDE_FILE_NAME, StringComparison.InvariantCultureIgnoreCase))
                 {
                     jsonName = item.FileNames[0];
                     break;
@@ -204,6 +166,9 @@ namespace TypeScriptDefinitionGenerator
 
         //        [JsonRequired]
         public string DefaultModuleName { get; set; } = OptionsDialogPage._defModuleName;
+
+        //        [JsonRequired]
+        public bool UseNamespace { get; set; } = OptionsDialogPage._defUseNamespace;
 
         //        [JsonRequired]
         public bool ClassInsteadOfInterface { get; set; } = OptionsDialogPage._defClassInsteadOfInterface;
