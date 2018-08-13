@@ -13,7 +13,6 @@ namespace TypeScriptDefinitionGenerator
 {
     internal static class IntellisenseParser
     {
-        private const string ModuleNameAttributeName = "TypeScriptModule";
         private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Project _project;
 
@@ -47,6 +46,7 @@ namespace TypeScriptDefinitionGenerator
 
             return new HashSet<IntellisenseObject>(list);
         }
+
         private static void ProcessElement(CodeElement element, List<IntellisenseObject> list, HashSet<CodeClass> underProcess)
         {
             if (element.Kind == vsCMElement.vsCMElementEnum)
@@ -95,9 +95,8 @@ namespace TypeScriptDefinitionGenerator
 
         private static bool ShouldProcess(CodeElement member)
         {
-            return
-                    member.Kind == vsCMElement.vsCMElementClass
-                    || member.Kind == vsCMElement.vsCMElementEnum;
+            return member.Kind == vsCMElement.vsCMElementClass ||
+                   member.Kind == vsCMElement.vsCMElementEnum;
         }
 
         private static void ProcessEnum(CodeEnum element, List<IntellisenseObject> list)
@@ -204,45 +203,32 @@ namespace TypeScriptDefinitionGenerator
 
         private static string GetClassName(CodeClass cc)
         {
-            return GetDataContractName(cc, "Name") ?? cc.Name;
+            return cc.Name;
+        }
+
+        private static string GetEnumName(CodeEnum cc)
+        {
+            return cc.Name;
         }
 
         private static string GetNamespace(CodeClass cc)
         {
-            return GetDataContractName(cc, "Namespace") ?? GetNamespace(cc.Attributes);
+            if (!Options.UseNamespace)
+                return Options.DefaultModuleName;
+
+            return cc == null
+                ? Options.DefaultModuleName
+                : cc.Namespace.FullName;
         }
 
-        private static string GetDataContractName(CodeClass cc, string attrName)
+        private static string GetNamespace(CodeEnum cc)
         {
-            var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
+            if (!Options.UseNamespace)
+                return Options.DefaultModuleName;
 
-            if (!dataContractAttribute.Any())
-                return null;
-
-            string name = null;
-            var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
-                           .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
-
-            if (keyValues.ContainsKey(attrName))
-                name = keyValues[attrName];
-
-            return name;
-        }
-
-        private static string GetNamespace(CodeEnum cc) { return GetNamespace(cc.Attributes); }
-
-        private static string GetNamespace(CodeElements attrs)
-        {
-            if (attrs == null) return Options.DefaultModuleName;
-
-            var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
-                                    where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
-                                    from arg in a.Arguments.Cast<CodeAttributeArgument>()
-                                    let v = (arg.Value ?? "").Trim('\"')
-                                    where !string.IsNullOrWhiteSpace(v)
-                                    select v;
-
-            return namespaceFromAttr.FirstOrDefault() ?? Options.DefaultModuleName;
+            return cc == null
+                ? Options.DefaultModuleName
+                : cc.Namespace.FullName;
         }
 
         private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes, HashSet<string> references)
@@ -292,7 +278,7 @@ namespace TypeScriptDefinitionGenerator
                     }
 
                     result.ClientSideReferenceName = (codeClass != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeClass) + "." : "") + Utility.CamelCaseClassName(GetClassName(codeClass)) : null) ??
-                                                     (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(codeEnum.Name) : null);
+                                                     (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(GetEnumName(codeEnum)) : null);
                 }
 
                 if (!isPrimitive && (codeClass != null || codeEnum != null) && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)

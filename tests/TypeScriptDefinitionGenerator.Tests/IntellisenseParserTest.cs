@@ -60,6 +60,7 @@ namespace TypeScriptDefinitionGenerator.Tests
 
                 ClassInsteadOfInterface = false,
                 DefaultModuleName = "Server.Dtos",
+                UseNamespace = true,
                 DeclareModule = true,
                 IgnoreIntellisense = true,
             });
@@ -78,9 +79,9 @@ namespace TypeScriptDefinitionGenerator.Tests
             Assert.AreEqual(null, list[0].Properties[1].Summary);
             Assert.AreEqual("TypeScriptDefinitionGenerator.Tests.IntEnum", list[0].Properties[1].Type.CodeName);
             Assert.AreNotEqual("any", list[0].Properties[1].Type.TypeScriptName);
-            Assert.AreEqual("Server.Dtos.IntEnum", list[0].Properties[1].Type.TypeScriptName);
+            Assert.AreEqual("TypeScriptDefinitionGenerator.Tests.IntEnum", list[0].Properties[1].Type.TypeScriptName);
             Assert.AreNotEqual(null, list[0].Properties[1].Type.ClientSideReferenceName);
-            Assert.AreEqual("Server.Dtos.IntEnum", list[0].Properties[1].Type.ClientSideReferenceName);
+            Assert.AreEqual("TypeScriptDefinitionGenerator.Tests.IntEnum", list[0].Properties[1].Type.ClientSideReferenceName);
             Assert.AreEqual(false, list[0].Properties[1].Type.IsArray);
             Assert.AreEqual(false, list[0].Properties[1].Type.IsDictionary);
             Assert.AreEqual(true, list[0].Properties[1].Type.IsKnownType);
@@ -93,9 +94,9 @@ namespace TypeScriptDefinitionGenerator.Tests
             Assert.AreEqual(null, list[0].Properties[3].Summary);
             Assert.AreEqual("ClassLibrary1.SomeEnum", list[0].Properties[3].Type.CodeName);
             Assert.AreNotEqual("any", list[0].Properties[3].Type.TypeScriptName);
-            Assert.AreEqual("Server.Dtos.SomeEnum", list[0].Properties[3].Type.TypeScriptName);
+            Assert.AreEqual("ClassLibrary1.SomeEnum", list[0].Properties[3].Type.TypeScriptName);
             Assert.AreNotEqual(null, list[0].Properties[3].Type.ClientSideReferenceName);
-            Assert.AreEqual("Server.Dtos.SomeEnum", list[0].Properties[3].Type.ClientSideReferenceName);
+            Assert.AreEqual("ClassLibrary1.SomeEnum", list[0].Properties[3].Type.ClientSideReferenceName);
             Assert.AreEqual(false, list[0].Properties[3].Type.IsArray);
             Assert.AreEqual(false, list[0].Properties[3].Type.IsDictionary);
             Assert.AreEqual(true, list[0].Properties[3].Type.IsKnownType);
@@ -108,9 +109,9 @@ namespace TypeScriptDefinitionGenerator.Tests
             Assert.AreEqual(null, list[0].Properties[4].Summary);
             Assert.AreEqual("ClassLibrary1.SomeSomeClass", list[0].Properties[4].Type.CodeName);
             Assert.AreNotEqual("any", list[0].Properties[4].Type.TypeScriptName);
-            Assert.AreEqual("Server.Dtos.SomeSomeClass", list[0].Properties[4].Type.TypeScriptName);
+            Assert.AreEqual("ClassLibrary1.SomeSomeClass", list[0].Properties[4].Type.TypeScriptName);
             Assert.AreNotEqual(null, list[0].Properties[4].Type.ClientSideReferenceName);
-            Assert.AreEqual("Server.Dtos.SomeSomeClass", list[0].Properties[4].Type.ClientSideReferenceName);
+            Assert.AreEqual("ClassLibrary1.SomeSomeClass", list[0].Properties[4].Type.ClientSideReferenceName);
             Assert.AreEqual(false, list[0].Properties[4].Type.IsArray);
             Assert.AreEqual(false, list[0].Properties[4].Type.IsDictionary);
             Assert.AreEqual(true, list[0].Properties[4].Type.IsKnownType);
