@@ -40,7 +40,7 @@
     <None Update="Class1.cs.generated.d.ts">
       <DependentUpon>Class1.cs</DependentUpon>
     </None>
-    <None Update="Class1.generated.d.ts">
+    <None Update="Class1.generated.ts">
       <DependentUpon>Class1.cs</DependentUpon>
     </None>
   </ItemGroup>
