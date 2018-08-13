@@ -13,7 +13,6 @@ namespace TypeScriptDefinitionGenerator
 {
     internal static class IntellisenseParser
     {
-        private const string ModuleNameAttributeName = "TypeScriptModule";
         private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Project _project;
 
@@ -205,8 +204,11 @@ namespace TypeScriptDefinitionGenerator
         private static string GetClassName(CodeClass cc)
         {
             return cc.Name;
+        }
 
-            // return GetDataContractName(cc, "Name") ?? cc.Name;
+        private static string GetEnumName(CodeEnum cc)
+        {
+            return cc.Name;
         }
 
         private static string GetNamespace(CodeClass cc)
@@ -217,8 +219,6 @@ namespace TypeScriptDefinitionGenerator
             return cc == null
                 ? Options.DefaultModuleName
                 : cc.Namespace.FullName;
-
-            //return GetDataContractName(cc, "Namespace") ?? GetNamespace(cc.Attributes);
         }
 
         private static string GetNamespace(CodeEnum cc)
@@ -229,40 +229,7 @@ namespace TypeScriptDefinitionGenerator
             return cc == null
                 ? Options.DefaultModuleName
                 : cc.Namespace.FullName;
-
-            //return GetNamespace(cc.Attributes);
         }
-
-        //private static string GetDataContractName(CodeClass cc, string attrName)
-        //{
-        //    var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
-
-        //    if (!dataContractAttribute.Any())
-        //        return null;
-
-        //    string name = null;
-        //    var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
-        //                   .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
-
-        //    if (keyValues.ContainsKey(attrName))
-        //        name = keyValues[attrName];
-
-        //    return name;
-        //}
-
-        //private static string GetNamespace(CodeElements attrs)
-        //{
-        //    if (attrs == null || attrs.Count == 0) return Options.DefaultModuleName;
-
-        //    var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
-        //                            where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
-        //                            from arg in a.Arguments.Cast<CodeAttributeArgument>()
-        //                            let v = (arg.Value ?? "").Trim('\"')
-        //                            where !string.IsNullOrWhiteSpace(v)
-        //                            select v;
-
-        //    return namespaceFromAttr.FirstOrDefault() ?? Options.DefaultModuleName;
-        //}
 
         private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes, HashSet<string> references)
         {
@@ -280,7 +247,7 @@ namespace TypeScriptDefinitionGenerator
             }
 
             string typeName = effectiveTypeRef.AsFullName;
-            
+
             try
             {
                 var codeClass = effectiveTypeRef.CodeType as CodeClass2;
@@ -311,7 +278,7 @@ namespace TypeScriptDefinitionGenerator
                     }
 
                     result.ClientSideReferenceName = (codeClass != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeClass) + "." : "") + Utility.CamelCaseClassName(GetClassName(codeClass)) : null) ??
-                                                     (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(codeEnum.Name) : null);
+                                                     (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(GetEnumName(codeEnum)) : null);
                 }
 
                 if (!isPrimitive && (codeClass != null || codeEnum != null) && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
