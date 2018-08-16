@@ -7,6 +7,15 @@ using System.IO;
 
 namespace TypeScriptDefinitionGenerator
 {
+    public enum EOLType
+    {
+        /// <summary>Unix</summary>
+        LF,
+
+        /// <summary>Windows</summary>
+        CRLF
+    }
+
     public class OptionsDialogPage : DialogPage
     {
         internal const bool _defCamelCaseEnumerationValues = false;
@@ -20,6 +29,7 @@ namespace TypeScriptDefinitionGenerator
         internal const bool _defUseNamespace = true;
         internal const bool _defDeclareModule = true;
         internal const bool _defIgnoreIntellisense = true;
+        internal const EOLType _defEOLType = EOLType.LF;
 
         [Category("Casing")]
         [DisplayName("Camel case enum values")]
@@ -69,6 +79,12 @@ namespace TypeScriptDefinitionGenerator
         [Description("Ignore intellisense for client side reference names")]
         [DefaultValue(_defIgnoreIntellisense)]
         public bool IgnoreIntellisense { get; set; } = _defIgnoreIntellisense;
+
+        [Category("Settings")]
+        [DisplayName("End Of Line (EOL)")]
+        [Description("Choose the EOL type Unix/Windows")]
+        [DefaultValue(_defEOLType)]
+        public EOLType EOLType { get; set; } = _defEOLType;
     }
 
     public class Options
@@ -92,6 +108,8 @@ namespace TypeScriptDefinitionGenerator
         public static bool DeclareModule => overrides?.DeclareModule ?? DtsPackage.Options.DeclareModule;
 
         public static bool IgnoreIntellisense => overrides?.IgnoreIntellisense ?? DtsPackage.Options.IgnoreIntellisense;
+
+        public static EOLType EOLType => overrides?.EOLType ?? DtsPackage.Options.EOLType;
 
         public static bool WebEssentials2015 => overrides?.WebEssentials2015 ?? DtsPackage.Options.WebEssentials2015;
 
@@ -180,8 +198,9 @@ namespace TypeScriptDefinitionGenerator
         public bool IgnoreIntellisense { get; set; } = OptionsDialogPage._defIgnoreIntellisense;
 
         //        [JsonRequired]
+        public EOLType EOLType { get; set; } = OptionsDialogPage._defEOLType;
+
+        //        [JsonRequired]
         public bool WebEssentials2015 { get; set; } = OptionsDialogPage._defWebEssentials2015;
-
     }
-
 }

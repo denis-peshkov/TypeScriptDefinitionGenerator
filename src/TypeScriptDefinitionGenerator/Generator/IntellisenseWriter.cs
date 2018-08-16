@@ -71,6 +71,9 @@ namespace TypeScriptDefinitionGenerator
                 }
             }
 
+            if (Options.EOLType == EOLType.LF)
+                sb.Replace("\r\n", "\n");
+
             return sb.ToString();
         }
 
