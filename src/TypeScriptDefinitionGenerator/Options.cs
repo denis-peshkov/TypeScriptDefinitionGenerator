@@ -30,6 +30,8 @@ namespace TypeScriptDefinitionGenerator
         internal const bool _defDeclareModule = true;
         internal const bool _defIgnoreIntellisense = true;
         internal const EOLType _defEOLType = EOLType.LF;
+        internal const bool _defIndentTab = true;
+        internal const byte _defIndentTabSize = 2;
 
         [Category("Casing")]
         [DisplayName("Camel case enum values")]
@@ -85,6 +87,18 @@ namespace TypeScriptDefinitionGenerator
         [Description("Choose the EOL type Unix/Windows")]
         [DefaultValue(_defEOLType)]
         public EOLType EOLType { get; set; } = _defEOLType;
+
+        [Category("Settings")]
+        [DisplayName("Indent Tab")]
+        [Description("Choose indentation to use Tab/Space: default is Tab")]
+        [DefaultValue(_defIndentTab)]
+        public bool IndentTab { get; set; } = _defIndentTab;
+
+        [Category("Settings")]
+        [DisplayName("Indent Tab Size")]
+        [Description("Set amount Spaces to replace the Tab, when Indent Tab is off")]
+        [DefaultValue(_defIndentTabSize)]
+        public byte IndentTabSize { get; set; } = _defIndentTabSize;
     }
 
     public class Options
@@ -110,6 +124,10 @@ namespace TypeScriptDefinitionGenerator
         public static bool IgnoreIntellisense => overrides?.IgnoreIntellisense ?? DtsPackage.Options.IgnoreIntellisense;
 
         public static EOLType EOLType => overrides?.EOLType ?? DtsPackage.Options.EOLType;
+
+        public static bool IndentTab => overrides?.IndentTab ?? DtsPackage.Options.IndentTab;
+
+        public static byte IndentTabSize => overrides?.IndentTabSize ?? DtsPackage.Options.IndentTabSize;
 
         public static bool WebEssentials2015 => overrides?.WebEssentials2015 ?? DtsPackage.Options.WebEssentials2015;
 
@@ -199,6 +217,12 @@ namespace TypeScriptDefinitionGenerator
 
         //        [JsonRequired]
         public EOLType EOLType { get; set; } = OptionsDialogPage._defEOLType;
+
+        //        [JsonRequired]
+        public bool IndentTab { get; set; } = OptionsDialogPage._defIndentTab;
+
+        //        [JsonRequired]
+        public byte IndentTabSize { get; set; } = OptionsDialogPage._defIndentTabSize;
 
         //        [JsonRequired]
         public bool WebEssentials2015 { get; set; } = OptionsDialogPage._defWebEssentials2015;
