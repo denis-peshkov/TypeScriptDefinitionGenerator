@@ -74,6 +74,9 @@ namespace TypeScriptDefinitionGenerator
             if (Options.EOLType == EOLType.LF)
                 sb.Replace("\r\n", "\n");
 
+            if (!Options.IndentTab)
+                sb.Replace("\t", new string(' ', Options.IndentTabSize));
+
             return sb.ToString();
         }
 
