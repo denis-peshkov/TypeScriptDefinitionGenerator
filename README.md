@@ -3,11 +3,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/lbuvy4vnkky4ycsb/branch/master?svg=true)](https://ci.appveyor.com/project/denis-peshkov/typescriptdefinitiongenerator/branch/master)
 
 ## NOTE: This is a customed redistribute
-The orginal repo can be found here: 
-https://github.com/madskristensen/TypeScriptDefinitionGenerator
-#### Best regard for him!
-
-
+The orginal repo wrote by @madskristensen, **best regard for him**!
 
 Download this extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=peshkov.5cb4e919-c9ff-4026-bd39-fd323a14fac7#overview)
 or get the [CI build](http://vsixgallery.com/extension/5cb4e919-c9ff-4026-bd39-fd323a14fac7/).
