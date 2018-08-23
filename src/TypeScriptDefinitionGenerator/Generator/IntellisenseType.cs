@@ -34,7 +34,7 @@ namespace TypeScriptDefinitionGenerator
         public IEnumerable<IntellisenseProperty> Shape { get; set; }
 
         public bool IsKnownType { get { return TypeScriptName != "any"; } }
-        
+
         public string TypeScriptName
         {
             get
@@ -51,13 +51,14 @@ namespace TypeScriptDefinitionGenerator
                 case "int16":
                 case "int32":
                 case "int64":
+                case "byte":
                 case "short":
                 case "int":
                 case "long":
+                case "biginteger":
                 case "float":
                 case "double":
                 case "decimal":
-                case "biginteger":
                     return js ? "Number" : "number";
 
                 case "datetime":
@@ -66,6 +67,7 @@ namespace TypeScriptDefinitionGenerator
                 case "system.datetimeoffset":
                     return "Date";
 
+                case "guid":
                 case "string":
                     return js ? "String" : "string";
 

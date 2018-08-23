@@ -18,6 +18,7 @@ on the official Visual Studio extension gallery.
 - [x] Dynamic build module name from server dto's namespace
 - [x] Added an Options.EOLType (to choose the EOL type Windows/Unix)
 - [x] Added the Options.IndentTab and Options.IndentTabSize (to convert the tab indentations into spaces)
+- [x] Added support while converting for "Byte -> number" and "GUID -> string"
 
 ## 2.1.0
 
