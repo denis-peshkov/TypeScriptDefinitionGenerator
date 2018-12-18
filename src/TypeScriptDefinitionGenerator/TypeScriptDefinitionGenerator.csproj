@@ -58,6 +58,7 @@
     <Compile Include="Generator\GenerationService.cs" />
     <Compile Include="Generator\DtsGenerator.cs" />
     <Compile Include="DtsPackage.cs" />
+    <Compile Include="Helpers\ExceptionForUser.cs" />
     <Compile Include="Helpers\Telemetry.cs" />
     <Compile Include="Helpers\Utility.cs" />
     <Compile Include="Helpers\VSHelpers.cs" />

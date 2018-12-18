@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,7 +12,7 @@ namespace TypeScriptDefinitionGenerator
     {
         private static readonly Regex _whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
-        public static string WriteTypeScript(IEnumerable<IntellisenseObject> objects)
+        public static string WriteTypeScript(IEnumerable<IntellisenseObject> objects, string sourceItemPath)
         {
             var sb = new StringBuilder();
             sb.AppendLine("// ------------------------------------------------------------------------------");
@@ -20,56 +21,111 @@ namespace TypeScriptDefinitionGenerator
             sb.AppendLine("// </auto-generated>");
             sb.AppendLine("// ------------------------------------------------------------------------------");
 
+            string export = !Options.DeclareModule ? "export " : string.Empty;
+            string prefixModule = Options.DeclareModule ? "\t" : String.Empty;
+
+            var sbBody = new StringBuilder();
+
+            var neededImports = new List<string>();
+
             foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
                 if (Options.DeclareModule)
                 {
-                    sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
+                    sbBody.AppendFormat("declare module {0} {{\r\n", ns.Key);
                 }
-
-                string export = !Options.DeclareModule ? "export " : string.Empty;
-                string prefixModule = Options.DeclareModule ? "\t" : String.Empty;
 
                 foreach (IntellisenseObject io in ns)
                 {
                     if (!string.IsNullOrEmpty(io.Summary))
-                        sb.Append(prefixModule).AppendLine("/** " + _whitespaceTrimmer.Replace(io.Summary, "") + " */");
+                        sbBody.Append(prefixModule).AppendLine("/** " + _whitespaceTrimmer.Replace(io.Summary, "") + " */");
 
                     if (io.IsEnum)
                     {
                         string type = "enum ";
-                        sb.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
+                        sbBody.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
-                        sb.AppendLine("{");
-                        WriteTSEnumDefinition(sb, prefixModule + "\t", io.Properties);
-                        sb.Append(prefixModule).AppendLine("}");
+                        sbBody.AppendLine("{");
+                        WriteTSEnumDefinition(sbBody, prefixModule + "\t", io.Properties);
+                        sbBody.Append(prefixModule).AppendLine("}");
                     }
                     else
                     {
                         string type = Options.ClassInsteadOfInterface ? "class " : "interface ";
-                        sb.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
+                        sbBody.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
                         if (!string.IsNullOrEmpty(io.BaseName))
                         {
-                            sb.Append("extends ");
+                            sbBody.Append("extends ");
 
                             if (!string.IsNullOrEmpty(io.BaseNamespace) && io.BaseNamespace != io.Namespace)
-                                sb.Append(io.BaseNamespace).Append(".");
+                                sbBody.Append(io.BaseNamespace).Append(".");
 
-                            sb.Append(Utility.CamelCaseClassName(io.BaseName)).Append(" ");
+                            sbBody.Append(Utility.CamelCaseClassName(io.BaseName)).Append(" ");
                         }
 
-                        sb.AppendLine("{");
-                        WriteTSInterfaceDefinition(sb, prefixModule + "\t", io.Properties);
-                        sb.Append(prefixModule).AppendLine("}");
+                        sbBody.AppendLine("{");
+                        WriteTSInterfaceDefinition(sbBody, prefixModule + "\t", io.Properties);
+                        sbBody.Append(prefixModule).AppendLine("}");
+                        // remember client-side references for which we need imports
+                        neededImports.AddRange(io.Properties.Where(p => p.Type.ClientSideReferenceName != null)
+                            .Select(p => p.Type.ClientSideReferenceName));
                     }
                 }
 
                 if (Options.DeclareModule)
                 {
-                    sb.AppendLine("}");
+                    sbBody.AppendLine("}");
                 }
             }
+
+            // if interface, import external interfaces and base classes
+            if (!Options.DeclareModule)
+            {
+                var imports = new List<string>();
+
+                var references = objects.SelectMany(o => o.References).Distinct();
+                foreach (var reference in references)
+                {
+                    var referencePathRelative = Utility.GetRelativePath(sourceItemPath, reference);
+                    // remove trailing ".ts" which is not expected for TS imports
+                    referencePathRelative = referencePathRelative.Substring(0, referencePathRelative.Length - 3);
+                    // make sure path contains forward slashes which are expected by TS
+                    referencePathRelative = referencePathRelative.Replace(Path.DirectorySeparatorChar, '/');
+                    var referenceName = Utility.RemoveDefaultExtension(Path.GetFileName(reference));
+
+                    // skipped indirect references
+                    if (!neededImports.Contains(referenceName))
+                    {
+                        continue;
+                    }
+
+                    sb.AppendLine($"import {{ {referenceName} }} from \"{referencePathRelative}\";");
+                    imports.Add(referenceName);
+                }
+
+                // also import base classes if not yet imported
+                var baseClasses = objects.Select(o => o.BaseName).Where(b => b != null && !imports.Contains(b)).Distinct();
+                foreach (var b in baseClasses)
+                {
+                    var expectedBaseClassPath = Path.Combine(Path.GetDirectoryName(sourceItemPath), b + ".cs");
+                    if (!File.Exists(expectedBaseClassPath))
+                    {
+                        throw new ExceptionForUser($"Could not find base class for {b}. Expected path: {expectedBaseClassPath}");
+                    }
+
+                    sb.AppendLine($"import {{ {b} }} from \"./{b}.generated\";");
+                    imports.Add(b);
+                }
+
+                var notImportedNeededImports = neededImports.Except(imports);
+                if (notImportedNeededImports.Any())
+                {
+                    throw new ExceptionForUser($"Sorry, needed imports missing: {string.Join(", ", notImportedNeededImports)}");
+                }
+            }
+
+            sb.Append(sbBody);
 
             if (Options.EOLType == EOLType.LF)
                 sb.Replace("\r\n", "\n");
