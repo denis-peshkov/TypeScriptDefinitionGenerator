@@ -1,6 +1,26 @@
 ### Installed product versions
 - Visual Studio: [example 2015 Professional]
 - This extension: [example 1.1.21]
+- Options override: [example
+```
+{
+                CamelCaseEnumerationValues = false,
+                CamelCasePropertyNames = true,
+                CamelCaseTypeNames = false,
+
+                WebEssentials2015 = false,
+
+                ClassInsteadOfInterface = false,
+                DeclareModule = false,
+                DefaultModuleName = "Server.Dtos",
+                EOLType = EOLType.LF,
+                IgnoreIntellisense = true,
+                IndentTab = false,
+                IndentTabSize = 2,
+                UseNamespace = true,            
+}
+```
+]
 
 ### Description
 Replace this text with a short description
