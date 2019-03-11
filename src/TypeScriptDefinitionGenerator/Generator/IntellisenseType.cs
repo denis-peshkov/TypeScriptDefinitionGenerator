@@ -68,6 +68,7 @@ namespace TypeScriptDefinitionGenerator
                     return "Date";
 
                 case "guid":
+                case "system.guid":
                 case "string":
                     return js ? "String" : "string";
 

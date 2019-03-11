@@ -116,6 +116,10 @@ namespace TypeScriptDefinitionGenerator.Tests
             Assert.AreEqual(false, list[0].Properties[4].Type.IsDictionary);
             Assert.AreEqual(true, list[0].Properties[4].Type.IsKnownType);
             Assert.AreEqual(false, list[0].Properties[4].Type.IsOptional);
+            Assert.AreEqual(11, list[0].Properties[4].Type.Shape.Count());
+            Assert.AreEqual("System.Guid", list[0].Properties[4].Type.Shape.First(o => o.Name == "Inc6").Type.CodeName);
+            Assert.AreNotEqual("any", list[0].Properties[4].Type.Shape.First(o => o.Name == "Inc6").Type.TypeScriptName);
+            Assert.AreEqual("string", list[0].Properties[4].Type.Shape.First(o => o.Name == "Inc6").Type.TypeScriptName);
         }
 
         [Test]
