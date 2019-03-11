@@ -1,9 +1,9 @@
 ### Installed product versions
 - Visual Studio: [example 2015 Professional]
 - This extension: [example 1.1.21]
-- Options override: [example
+- Options override:
 ```
-{
+[example {
                 CamelCaseEnumerationValues = false,
                 CamelCasePropertyNames = true,
                 CamelCaseTypeNames = false,
@@ -18,9 +18,8 @@
                 IndentTab = false,
                 IndentTabSize = 2,
                 UseNamespace = true,            
-}
+}]
 ```
-]
 
 ### Description
 Replace this text with a short description
