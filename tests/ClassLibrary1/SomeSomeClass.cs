@@ -16,5 +16,7 @@ namespace ClassLibrary1
         public IEnumerable<int> Inc10 { get; set; }
         public int[] Inc11 { get; set; }
         public bool Inc12 { get; set; }
+        public Dictionary<string, int> Inc13 { get; set; }
+        public IDictionary<string, int> Inc14 { get; set; }
     }
 }
