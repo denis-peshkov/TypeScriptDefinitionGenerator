@@ -11,7 +11,7 @@ namespace TypeScriptDefinitionGenerator
         public const string Name = "TypeScript Definition Generator";
         public const string Description = @"Creates and synchronizes TypeScript Definition files (d.ts) from C# model classes to build strongly typed web application where the server- and client-side models are in sync. Works on all .NET project types";
         public const string Language = "en-US";
-        public const string Version = "2.2.0.0";
+        public const string Version = "2.3.0.0";
         public const string Author = "Denis Peshkov";
         public const string Tags = "Code Generator, d.ts, dto, model, TypeScript, TypeScript generator";
     }
