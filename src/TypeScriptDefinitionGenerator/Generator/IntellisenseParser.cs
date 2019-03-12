@@ -280,8 +280,8 @@ namespace TypeScriptDefinitionGenerator
                     CodeName = effectiveTypeRef.AsString
                 };
 
-                VSHelpers.WriteOnBuildDebugWindow($"#{result.CodeName}#{result.TypeScriptName}#{effectiveTypeRef.AsString}#{effectiveTypeRef.AsFullName}#{effectiveTypeRef.CodeType}");
-                VSHelpers.WriteOnBuildDebugWindow($"##{effectiveTypeRef.TypeKind}##{vsCMTypeRef.vsCMTypeRefCodeType}##{effectiveTypeRef.CodeType.InfoLocation}##{vsCMInfoLocation.vsCMInfoLocationProject}");
+                //VSHelpers.WriteOnBuildDebugWindow($"#{result.CodeName}#{result.TypeScriptName}#{effectiveTypeRef.AsString}#{effectiveTypeRef.AsFullName}#{effectiveTypeRef.CodeType}");
+                //VSHelpers.WriteOnBuildDebugWindow($"##{effectiveTypeRef.TypeKind}##{vsCMTypeRef.vsCMTypeRefCodeType}##{effectiveTypeRef.CodeType.InfoLocation}##{vsCMInfoLocation.vsCMInfoLocationProject}");
 
                 result.ClientSideReferenceName = null;
                 if (effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType)
@@ -295,7 +295,7 @@ namespace TypeScriptDefinitionGenerator
                             hasIntellisense = HasIntellisense(codeEnum.ProjectItem, references);
                     }
 
-                    VSHelpers.WriteOnBuildDebugWindow($"@{codeClass != null}@{codeEnum != null}@{hasIntellisense}@{Options.DeclareModule}");
+                    //VSHelpers.WriteOnBuildDebugWindow($"@{codeClass != null}@{codeEnum != null}@{hasIntellisense}@{Options.DeclareModule}");
                     result.ClientSideReferenceName = (codeClass != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeClass) + "." : "") + Utility.CamelCaseClassName(GetClassName(codeClass)) : null) ??
                                                      (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(GetEnumName(codeEnum)) : null) ?? 
                                                      (codeInterface != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeInterface) + "." : "") + Utility.CamelCaseClassName(GetInterfaceName(codeInterface)) : null);
