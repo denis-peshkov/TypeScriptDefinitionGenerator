@@ -12,6 +12,8 @@ namespace TypeScriptDefinitionGenerator.Tests
     [TestFixture]
     public class IntellisenseParserTest : BaseTestController
     {
+        private const string ActiveObjectName = "VisualStudio.DTE.16.0";
+
         public override void SetUp()
         {
             base.SetUp();
@@ -27,7 +29,7 @@ namespace TypeScriptDefinitionGenerator.Tests
         public void HowToUseCodeModelSpike()
         {
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(ActiveObjectName);
 
             // get the solution
             var worker = new SolutionWorker();
@@ -41,7 +43,7 @@ namespace TypeScriptDefinitionGenerator.Tests
             //Arrange
 
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(ActiveObjectName);
 
 
             var worker = new SolutionWorker();
@@ -141,7 +143,7 @@ namespace TypeScriptDefinitionGenerator.Tests
             //Arrange
 
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(ActiveObjectName);
 
 
             var worker = new SolutionWorker();
