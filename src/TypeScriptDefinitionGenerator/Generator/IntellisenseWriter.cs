@@ -73,9 +73,10 @@ namespace TypeScriptDefinitionGenerator
                         sbBody.AppendLine("{");
                         WriteTSInterfaceDefinition(sbBody, prefixModule + "\t", io.Properties);
                         sbBody.Append(prefixModule).AppendLine("}");
-                        // remember client-side references for which we need imports
-                        neededImports.AddRange(io.Properties.Where(p => p.Type.ClientSideReferenceName != null)
-                            .Select(p => p.Type.ClientSideReferenceName));
+                        // Remember client-side references for which we need imports.
+                        // Dictionary are built-in into TS, they need no imports.
+                        neededImports.AddRange(io.Properties.Where(p => p.Type.ClientSideReferenceName != null &&
+                            !p.Type.IsDictionary).Select(p => p.Type.ClientSideReferenceName));
                     }
                 }
 

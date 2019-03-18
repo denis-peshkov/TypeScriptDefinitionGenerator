@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Some.generated.ts">
-      <DependentUpon>Some.cs</DependentUpon>
+    <None Update="SomeEnum.generated.ts">
+      <DependentUpon>SomeEnum.cs</DependentUpon>
     </None>
     <None Update="SomeClass.generated.ts">
       <DependentUpon>SomeClass.cs</DependentUpon>
