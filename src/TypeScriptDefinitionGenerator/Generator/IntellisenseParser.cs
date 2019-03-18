@@ -201,6 +201,11 @@ namespace TypeScriptDefinitionGenerator
             return retVal;
         }
 
+        private static string GetInterfaceName(CodeInterface cc)
+        {
+            return cc.Name;
+        }
+
         private static string GetClassName(CodeClass cc)
         {
             return cc.Name;
@@ -209,6 +214,16 @@ namespace TypeScriptDefinitionGenerator
         private static string GetEnumName(CodeEnum cc)
         {
             return cc.Name;
+        }
+
+        private static string GetNamespace(CodeInterface cc)
+        {
+            if (!Options.UseNamespace)
+                return Options.DefaultModuleName;
+
+            return cc == null
+                ? Options.DefaultModuleName
+                : cc.Namespace.FullName;
         }
 
         private static string GetNamespace(CodeClass cc)
@@ -243,13 +258,16 @@ namespace TypeScriptDefinitionGenerator
 
             if (isCollection)
             {
-                isDictionary = codeTypeRef.AsString.StartsWith("System.Collections.Generic.Dictionary", StringComparison.Ordinal);
+                isDictionary = codeTypeRef.AsString.StartsWith("System.Collections.Generic.Dictionary", StringComparison.Ordinal)
+                    || codeTypeRef.AsString.StartsWith("System.Collections.Generic.IDictionary", StringComparison.Ordinal);
             }
 
             string typeName = effectiveTypeRef.AsFullName;
 
             try
             {
+                //VSHelpers.WriteOnBuildDebugWindow($"%{(effectiveTypeRef.CodeType as CodeInterface2) != null}%");
+                var codeInterface = effectiveTypeRef.CodeType as CodeInterface2;
                 var codeClass = effectiveTypeRef.CodeType as CodeClass2;
                 var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
                 var isPrimitive = IsPrimitive(effectiveTypeRef);
@@ -277,8 +295,10 @@ namespace TypeScriptDefinitionGenerator
                             hasIntellisense = HasIntellisense(codeEnum.ProjectItem, references);
                     }
 
+                    //VSHelpers.WriteOnBuildDebugWindow($"@{codeClass != null}@{codeEnum != null}@{hasIntellisense}@{Options.DeclareModule}");
                     result.ClientSideReferenceName = (codeClass != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeClass) + "." : "") + Utility.CamelCaseClassName(GetClassName(codeClass)) : null) ??
-                                                     (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(GetEnumName(codeEnum)) : null);
+                                                     (codeEnum != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeEnum) + "." : "") + Utility.CamelCaseClassName(GetEnumName(codeEnum)) : null) ?? 
+                                                     (codeInterface != null && hasIntellisense ? (Options.DeclareModule ? GetNamespace(codeInterface) + "." : "") + Utility.CamelCaseClassName(GetInterfaceName(codeInterface)) : null);
                 }
 
                 if (!isPrimitive && (codeClass != null || codeEnum != null) && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
