@@ -65,7 +65,8 @@ namespace TypeScriptDefinitionGenerator.Tests
                 IgnoreIntellisense = true,
             });
             var list = IntellisenseParser.ProcessFile(item).ToList();
-            var tsFile = IntellisenseWriter.WriteTypeScript(list);
+            var sourceItemPath = item.Properties.Item("FullPath").Value as string;
+            var tsFile = IntellisenseWriter.WriteTypeScript(list, sourceItemPath);
 
             //Assert
             Assert.IsNotNull(list);
@@ -179,7 +180,8 @@ namespace TypeScriptDefinitionGenerator.Tests
                 UseNamespace = true,
             });
             var list = IntellisenseParser.ProcessFile(item).ToList();
-            var tsFile = IntellisenseWriter.WriteTypeScript(list);
+            var sourceItemPath = item.Properties.Item("FullPath").Value as string;
+            var tsFile = IntellisenseWriter.WriteTypeScript(list, sourceItemPath);
 
             //Assert
             Assert.IsNotNull(list);

@@ -12,6 +12,12 @@ namespace TypeScriptDefinitionGenerator
     {
         private static readonly Regex _whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
+        /// <summary>
+        /// Generates TypeScript file for given C# class/enum (IntellisenseObject).
+        /// </summary>
+        /// <param name="objects">IntellisenseObject of class/enum</param>
+        /// <param name="sourceItemPath">Path to C# source file</param>
+        /// <returns>TypeScript file content as string</returns>
         public static string WriteTypeScript(IEnumerable<IntellisenseObject> objects, string sourceItemPath)
         {
             var sb = new StringBuilder();
@@ -121,7 +127,8 @@ namespace TypeScriptDefinitionGenerator
                 var notImportedNeededImports = neededImports.Except(imports);
                 if (notImportedNeededImports.Any())
                 {
-                    throw new ExceptionForUser($"Sorry, needed imports missing: {string.Join(", ", notImportedNeededImports)}");
+                    throw new ExceptionForUser($"Sorry, needed imports missing: {string.Join(", ", notImportedNeededImports)}." +
+                        $"Make sure file names match contained class/enum name.");
                 }
             }
 
