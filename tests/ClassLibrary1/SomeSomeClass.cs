@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ClassLibrary1
 {
-    public class SomeSomeClass: SomeClass
+    public class SomeSomeClass : SomeClass
     {
         public int Inc2 { get; set; }
         public long Inc3 { get; set; }

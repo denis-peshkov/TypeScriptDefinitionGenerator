@@ -37,10 +37,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Class1.cs">
+      <Generator></Generator>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Class1.cs.generated.d.ts">
-      <DependentUpon>Class1.cs</DependentUpon>
-    </None>
-    <None Update="Class1.generated.ts">
       <DependentUpon>Class1.cs</DependentUpon>
     </None>
   </ItemGroup>

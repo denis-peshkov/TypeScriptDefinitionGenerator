@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Windows.Threading;
 using Microsoft.Internal.VisualStudio.PlatformUI;
 using TypeScriptDefinitionGenerator.Helpers;
@@ -58,13 +59,23 @@ namespace TypeScriptDefinitionGenerator
                 Options.ReadOptionOverrides(sourceItem);
                 VSHelpers.WriteOnOutputWindow(string.Format("{0} - Started", sourceItem.Name));
                 var list = IntellisenseParser.ProcessFile(sourceItem);
+                // path is needed for relative paths of imports
+                var sourceItemPath = sourceItem.Properties.Item("FullPath").Value as string;
                 VSHelpers.WriteOnOutputWindow(string.Format("{0} - Completed", sourceItem.Name));
-                return IntellisenseWriter.WriteTypeScript(list);
+                return IntellisenseWriter.WriteTypeScript(list.ToList(), sourceItemPath);
             }
             catch (Exception ex)
             {
                 VSHelpers.WriteOnOutputWindow(string.Format("{0} - Failure", sourceItem.Name));
-                Telemetry.TrackException("ParseFailure", ex);
+                if (ex is ExceptionForUser)
+                {
+                    // "expected" exception, show to user instead of reporting
+                    VSHelpers.WriteOnOutputWindow(ex.Message);
+                }
+                else
+                {
+                    Telemetry.TrackException("ParseFailure", ex);
+                }
                 return null;
             }
         }

@@ -5,12 +5,24 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Some.generated.ts">
-      <DependentUpon>Some.cs</DependentUpon>
-    </None>
-    <None Update="SomeClass.generated.ts">
-      <DependentUpon>SomeClass.cs</DependentUpon>
-    </None>
+    <Compile Update="base\ThirdClass.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="SecondClass.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="SomeClass.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="SomeEnum.cs">
+      <Generator></Generator>
+    </Compile>
+    <Compile Update="SomeSomeClass.cs">
+      <Generator></Generator>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="SomeSomeClass.generated.d.ts">
       <DependentUpon>SomeSomeClass.cs</DependentUpon>
     </None>

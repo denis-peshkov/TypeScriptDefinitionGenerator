@@ -10,24 +10,56 @@ namespace TypeScriptDefinitionGenerator.Tests
 {
     public class SolutionWorker
     {
+        private const string PhysicalFolder_guid = "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}";
+
+        /// <summary>
+        /// Recursively finds first item in solution matching <paramref name="filename"/>.
+        /// </summary>
+        /// <param name="solution">solution</param>
+        /// <param name="filename">wanted filename</param>
+        /// <returns>ProjectItem or null</returns>
         public ProjectItem GetProjectItem(Solution solution, string filename)
         {
             ProjectItem ret = null;
             // get all the projects
             foreach (Project project in solution.Projects)
             {
-                // get all the items in each project
-                foreach (ProjectItem item in project.ProjectItems)
+                var foundFile = FindRecursive(filename, project.ProjectItems);
+                if (foundFile != null)
                 {
-                    // find this file and examine it
-                    if (item.Name == filename)
-                    {
-                        ret = item;
-                    }
+                    return foundFile;
                 }
             }
 
             return ret;
+        }
+
+        private ProjectItem FindRecursive(string filename, ProjectItems projectItems)
+        {
+            // get all the items in each project
+            foreach (ProjectItem item in projectItems)
+            {
+                if (item.Kind == PhysicalFolder_guid)
+                {
+                    var subProjectItems = item.ProjectItems as ProjectItems;
+                    if (subProjectItems != null)
+                    {
+                        var foundFile = FindRecursive(filename, subProjectItems);
+                        if (foundFile != null)
+                        {
+                            return foundFile;
+                        }
+                    }
+                }
+                
+                // find this file and examine it
+                if (item.Name == filename)
+                {
+                    return item;
+                }
+            }
+
+            return null;
         }
 
         public void ExamineSolution(Solution solution)
