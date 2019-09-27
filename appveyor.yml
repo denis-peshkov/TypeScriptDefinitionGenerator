@@ -22,7 +22,7 @@ for:
   install:
     - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/denis-peshkov/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
   before_build: 
-    - ps: Vsix-IncrementVsixVersion -initialVersion 2.2.0.0 -updateVsixCsVersion | Vsix-UpdateBuildVersion
+    - ps: Vsix-IncrementVsixVersion -initialVersion 2.2.2.0 -updateVsixCsVersion | Vsix-UpdateBuildVersion
   after_test:
     - ps: Vsix-PushArtifacts | Vsix-PublishToGallery
 
