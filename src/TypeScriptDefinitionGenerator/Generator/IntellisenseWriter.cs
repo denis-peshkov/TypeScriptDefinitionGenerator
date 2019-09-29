@@ -11,6 +11,8 @@ namespace TypeScriptDefinitionGenerator
     internal static class IntellisenseWriter
     {
         private static readonly Regex _whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
+        private static readonly string ExtendsPlaceholder = "#{ExtendsPlaceholder}";
+        private static string ExtendsContent { get; set; } = string.Empty;
 
         /// <summary>
         /// Generates TypeScript file for given C# class/enum (IntellisenseObject).
@@ -60,14 +62,23 @@ namespace TypeScriptDefinitionGenerator
                         string type = Options.ClassInsteadOfInterface ? "class " : "interface ";
                         sbBody.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
-                        if (!string.IsNullOrEmpty(io.BaseName))
+                        string[] summaryLines = io.Summary.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                        string optionsLine = summaryLines.SingleOrDefault(l => l.StartsWith("TypeScriptDefinitionGenerator:"));
+                        var ignoreBase = optionsLine != null && optionsLine.Contains("IgnoreBaseType");
+                        if (!string.IsNullOrEmpty(io.BaseName) && !ignoreBase)
                         {
-                            sbBody.Append("extends ");
-
+                            sbBody.Append(ExtendsPlaceholder);
                             if (!string.IsNullOrEmpty(io.BaseNamespace) && io.BaseNamespace != io.Namespace)
-                                sbBody.Append(io.BaseNamespace).Append(".");
-
-                            sbBody.Append(Utility.CamelCaseClassName(io.BaseName)).Append(" ");
+                            {
+                                ExtendsContent = $"extends {io.BaseNamespace}.{Utility.CamelCaseClassName(io.BaseName)} ";
+                            }
+                            else
+                            {
+                                ExtendsContent = $"extends {Utility.CamelCaseClassName(io.BaseName)} ";
+                            }
+                        }
+                        else {
+                            ExtendsContent = string.Empty;
                         }
 
                         sbBody.AppendLine("{");
@@ -118,25 +129,32 @@ namespace TypeScriptDefinitionGenerator
                     var expectedBaseClassPath = Path.Combine(Path.GetDirectoryName(sourceItemPath), b + ".cs");
                     if (!File.Exists(expectedBaseClassPath))
                     {
-                        throw new ExceptionForUser($"Could not find base class for {b}. Expected path: {expectedBaseClassPath}");
+                        var warningMessage =
+                        $"Sorry, ignoring base class '{b}' because expected source file does not exist: {expectedBaseClassPath} ";
+                        sb.AppendLine($"// {warningMessage}");
+                        VSHelpers.WriteOnOutputWindow(warningMessage);
+                        // remove placeholder from sbBody to prevent "extends " to be inserted later
+                        sbBody.Replace(ExtendsPlaceholder, string.Empty);
                     }
-
-                    sb.AppendLine($"import {{ {b} }} from \"./{b}.generated\";");
-                    imports.Add(b);
+                    else
+                    {
+                        sb.AppendLine($"import {{ {b} }} from \"./{b}.generated\";");
+                        imports.Add(b);
+                    }
                 }
 
                 var notImportedNeededImports = neededImports.Except(imports).ToList();
                 if (notImportedNeededImports.Any())
                 {
-                    var exceptionForDeveloper =
+                    var warningMessage =
                         $"Sorry, needed imports missing: {string.Join(", ", notImportedNeededImports)}. " +
                         $"Make sure file names match contained class/enum name.";
-                    sb.AppendLine($"// {exceptionForDeveloper}");
-                    VSHelpers.WriteOnOutputWindow(exceptionForDeveloper);
-                    //throw new ExceptionForUser(exceptionForDeveloper);
+                    sb.AppendLine($"// {warningMessage}");
+                    VSHelpers.WriteOnOutputWindow(warningMessage);
                 }
             }
 
+            sbBody.Replace(ExtendsPlaceholder, ExtendsContent);
             sb.Append(sbBody);
 
             if (Options.EOLType == EOLType.LF)
