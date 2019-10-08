@@ -62,8 +62,8 @@ namespace TypeScriptDefinitionGenerator
                         string type = Options.ClassInsteadOfInterface ? "class " : "interface ";
                         sbBody.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
-                        string[] summaryLines = io.Summary.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                        string optionsLine = summaryLines.SingleOrDefault(l => l.StartsWith("TypeScriptDefinitionGenerator:"));
+                        string[] summaryLines = io.Summary?.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                        string optionsLine = summaryLines?.SingleOrDefault(l => l.StartsWith("TypeScriptDefinitionGenerator:"));
                         var ignoreBase = optionsLine != null && optionsLine.Contains("IgnoreBaseType");
                         if (!string.IsNullOrEmpty(io.BaseName) && !ignoreBase)
                         {
