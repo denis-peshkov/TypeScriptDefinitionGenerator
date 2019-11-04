@@ -27,6 +27,7 @@ namespace TypeScriptDefinitionGenerator
         internal const bool _defClassInsteadOfInterface = false;
         internal const string _defModuleName = "Server.Dtos";
         internal const bool _defUseNamespace = true;
+        internal const bool _defAddAmdModuleName = false;
         internal const bool _defDeclareModule = true;
         internal const bool _defIgnoreIntellisense = true;
         internal const EOLType _defEOLType = EOLType.LF;
@@ -64,6 +65,11 @@ namespace TypeScriptDefinitionGenerator
         [Description("Use Namespace by default, otherwise \"Default Module name\" will be taken.")]
         public bool UseNamespace { get; set; } = _defUseNamespace;
 
+        [Category("Settings")]
+        [DisplayName("Add AMD module name annotation")]
+        [Description("Add '/// <amd-module name='[ModuleName]' to top of generated file/>'")]
+        public bool AddAmdModuleName { get; set; } = _defAddAmdModuleName;
+        
         [Category("Settings")]
         [DisplayName("Class instead of Interface")]
         [Description("Controls whether to generate a class or an interface: default is an Interface")]
@@ -116,6 +122,8 @@ namespace TypeScriptDefinitionGenerator
         public static string DefaultModuleName => overrides?.DefaultModuleName ?? DtsPackage.Options.DefaultModuleName;
 
         public static bool UseNamespace => overrides?.UseNamespace ?? DtsPackage.Options.UseNamespace;
+
+        public static bool AddAmdModuleName => overrides?.AddAmdModuleName ?? DtsPackage.Options.AddAmdModuleName;
 
         public static bool ClassInsteadOfInterface => overrides?.ClassInsteadOfInterface ?? DtsPackage.Options.ClassInsteadOfInterface;
 
@@ -205,6 +213,9 @@ namespace TypeScriptDefinitionGenerator
 
         //        [JsonRequired]
         public bool UseNamespace { get; set; } = OptionsDialogPage._defUseNamespace;
+        
+        //        [JsonRequired]
+        public bool AddAmdModuleName { get; set; } = OptionsDialogPage._defAddAmdModuleName;
 
         //        [JsonRequired]
         public bool ClassInsteadOfInterface { get; set; } = OptionsDialogPage._defClassInsteadOfInterface;
