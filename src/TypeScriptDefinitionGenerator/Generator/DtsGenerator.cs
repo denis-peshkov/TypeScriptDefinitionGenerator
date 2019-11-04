@@ -27,6 +27,9 @@ namespace TypeScriptDefinitionGenerator
             this.originalExt = Path.GetExtension(inputFileName);
             if (item != null)
             {
+                // Sometimes "DtsPackage.Options"==null at this point. Make sure that options get loaded now.
+                DtsPackage.EnsurePackageLoad();
+
                 try
                 {
                     string dts = GenerationService.ConvertToTypeScript(item);
