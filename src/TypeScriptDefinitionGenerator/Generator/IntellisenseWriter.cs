@@ -10,8 +10,6 @@ namespace TypeScriptDefinitionGenerator
 {
     internal static class IntellisenseWriter
     {
-        private static readonly Regex _whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
-
         /// <summary>
         /// Generates TypeScript file for given C# class/enum (IntellisenseObject).
         /// </summary>
@@ -43,9 +41,8 @@ namespace TypeScriptDefinitionGenerator
 
                 foreach (IntellisenseObject io in ns)
                 {
-                    if (!string.IsNullOrEmpty(io.Summary))
-                        sbBody.Append(prefixModule).AppendLine("/** " + _whitespaceTrimmer.Replace(io.Summary, "") + " */");
-
+                    WriteTypeScriptComment(io.Summary, sbBody, prefixModule);
+                    
                     if (io.IsEnum)
                     {
                         string type = "enum ";
@@ -157,17 +154,32 @@ namespace TypeScriptDefinitionGenerator
             return "0";
         }
 
-        private static void WriteTypeScriptComment(IntellisenseProperty p, StringBuilder sb, string prefix)
+        private static void WriteTypeScriptComment(string comment, StringBuilder sb, string prefix)
         {
-            if (string.IsNullOrEmpty(p.Summary)) return;
-            sb.Append(prefix).AppendLine("/** " + _whitespaceTrimmer.Replace(p.Summary, "") + " */");
+            if (string.IsNullOrEmpty(comment)) return;
+            string[] commentLines = comment.Split(
+                new[] { "\r\n", "\r", "\n" },
+                StringSplitOptions.None
+            );
+            bool isFirstLine = true;
+            foreach (var commentLine in commentLines)
+            {
+                if (isFirstLine)
+                {
+                    sb.Append(prefix).AppendLine("/** ");
+                    isFirstLine = false;
+                }
+
+                sb.Append(prefix).Append(" * ").AppendLine(commentLine.Replace("*/", "+/"));
+            }
+            sb.Append(prefix).AppendLine(" */");
         }
 
         private static void WriteTSEnumDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
         {
             foreach (var p in props)
             {
-                WriteTypeScriptComment(p, sb, prefix);
+                WriteTypeScriptComment(p.Summary, sb, prefix);
 
                 if (p.InitExpression != null)
                 {
@@ -185,7 +197,7 @@ namespace TypeScriptDefinitionGenerator
         {
             foreach (var p in props)
             {
-                WriteTypeScriptComment(p, sb, prefix);
+                WriteTypeScriptComment(p.Summary, sb, prefix);
                 sb.AppendFormat("{0}{1}: ", prefix, Utility.CamelCasePropertyName(p.NameWithOption));
 
                 if (p.Type.IsKnownType) sb.Append(p.Type.TypeScriptName);

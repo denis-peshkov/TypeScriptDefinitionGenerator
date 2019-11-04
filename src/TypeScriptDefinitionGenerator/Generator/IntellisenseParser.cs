@@ -442,15 +442,32 @@ namespace TypeScriptDefinitionGenerator
 
             try
             {
-                string summary = "";
+                var summary = new System.Text.StringBuilder();
                 if (!string.IsNullOrWhiteSpace(xmlComment))
                 {
-                    summary = XElement.Parse(xmlComment)
-                               .Descendants("summary")
-                               .Select(x => x.Value)
-                               .FirstOrDefault();
+                    var s = XElement.Parse(xmlComment).Descendants("summary").FirstOrDefault();
+                    foreach (var e in s.Nodes())
+                    {
+                        switch (e.NodeType)
+                        {
+                            case System.Xml.XmlNodeType.None:
+                                break;
+                            case System.Xml.XmlNodeType.Element:
+                                if ((e as XElement).Name == "see") {
+                                    summary.Append("'" + (e as XElement).Attribute("cref").Value + "'");
+                                }
+
+                                break;
+                            case System.Xml.XmlNodeType.Text:
+                                summary.Append((e as XText).Value);
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
                 }
-                if (!string.IsNullOrEmpty(summary)) return summary.Trim();
+                if (summary.Length > 0) return summary.ToString().Trim();
                 if (!string.IsNullOrWhiteSpace(inlineComment)) return inlineComment.Trim();
                 return null;
             }
