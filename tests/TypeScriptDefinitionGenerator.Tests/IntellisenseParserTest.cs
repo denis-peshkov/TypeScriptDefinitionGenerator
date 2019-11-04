@@ -27,7 +27,7 @@ namespace TypeScriptDefinitionGenerator.Tests
         public void HowToUseCodeModelSpike()
         {
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(VisualStudioProgId);
 
             // get the solution
             var worker = new SolutionWorker();
@@ -41,7 +41,7 @@ namespace TypeScriptDefinitionGenerator.Tests
             //Arrange
 
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(VisualStudioProgId);
 
 
             var worker = new SolutionWorker();
@@ -142,7 +142,7 @@ namespace TypeScriptDefinitionGenerator.Tests
             //Arrange
 
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(VisualStudioProgId);
 
 
             var worker = new SolutionWorker();
@@ -226,7 +226,7 @@ namespace TypeScriptDefinitionGenerator.Tests
         public void CheckGenerateTypeScriptOutput()
         {
             // get the DTE reference...
-            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject("VisualStudio.DTE.15.0");
+            DTE2 dte2 = (DTE2)System.Runtime.InteropServices.Marshal.GetActiveObject(VisualStudioProgId);
 
             var worker = new SolutionWorker();
             worker.ExamineSolution(dte2.Solution);
