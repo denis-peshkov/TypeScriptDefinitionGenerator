@@ -11,6 +11,7 @@ namespace TypeScriptDefinitionGenerator
     internal static class IntellisenseWriter
     {
         private static readonly Regex _whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
+        private static Dictionary<string, string> ExtendsPlaceholders { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Generates TypeScript file for given C# class/enum (IntellisenseObject).
@@ -33,6 +34,7 @@ namespace TypeScriptDefinitionGenerator
             var sbBody = new StringBuilder();
 
             var neededImports = new List<string>();
+            var imports = new List<string>();
 
             foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
@@ -60,14 +62,27 @@ namespace TypeScriptDefinitionGenerator
                         string type = Options.ClassInsteadOfInterface ? "class " : "interface ";
                         sbBody.Append(prefixModule).Append(export).Append(type).Append(Utility.CamelCaseClassName(io.Name)).Append(" ");
 
-                        if (!string.IsNullOrEmpty(io.BaseName))
+                        string[] summaryLines = io.Summary?.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                        string optionsLine = summaryLines?.SingleOrDefault(l => l.StartsWith("TypeScriptDefinitionGenerator:"));
+                        var ignoreBase = optionsLine != null && optionsLine.Contains("IgnoreBaseType");
+
+                        if (!string.IsNullOrEmpty(io.BaseName) && !ignoreBase)
                         {
-                            sbBody.Append("extends ");
-
+                            var extendsContent = string.Empty;
+                            sbBody.Append("#{ExtendsPlaceholder_" + io.BaseName + "}");
                             if (!string.IsNullOrEmpty(io.BaseNamespace) && io.BaseNamespace != io.Namespace)
-                                sbBody.Append(io.BaseNamespace).Append(".");
+                            {
+                                extendsContent = $"extends {io.BaseNamespace}.{Utility.CamelCaseClassName(io.BaseName)} ";
+                            }
+                            else
+                            {
+                                extendsContent = $"extends {Utility.CamelCaseClassName(io.BaseName)} ";
+                            }
 
-                            sbBody.Append(Utility.CamelCaseClassName(io.BaseName)).Append(" ");
+                            if (!ExtendsPlaceholders.ContainsKey(io.BaseName))
+                            {
+                                ExtendsPlaceholders.Add(io.BaseName, extendsContent);
+                        }
                         }
 
                         sbBody.AppendLine("{");
@@ -77,6 +92,8 @@ namespace TypeScriptDefinitionGenerator
                         // Dictionary are built-in into TS, they need no imports.
                         neededImports.AddRange(io.Properties.Where(p => p.Type.ClientSideReferenceName != null &&
                             !p.Type.IsDictionary).Select(p => p.Type.ClientSideReferenceName));
+                        // Remember that this class was already included (imported)
+                        imports.Add(Utility.CamelCaseClassName(io.Name));
                     }
                 }
 
@@ -86,11 +103,11 @@ namespace TypeScriptDefinitionGenerator
                 }
             }
 
+            neededImports.RemoveAll(n => imports.Contains(n));
+
             // if interface, import external interfaces and base classes
             if (!Options.DeclareModule)
             {
-                var imports = new List<string>();
-
                 var references = objects.SelectMany(o => o.References).Distinct();
                 foreach (var reference in references)
                 {
@@ -118,23 +135,34 @@ namespace TypeScriptDefinitionGenerator
                     var expectedBaseClassPath = Path.Combine(Path.GetDirectoryName(sourceItemPath), b + ".cs");
                     if (!File.Exists(expectedBaseClassPath))
                     {
-                        throw new ExceptionForUser($"Could not find base class for {b}. Expected path: {expectedBaseClassPath}");
+                        var warningMessage =
+                        $"Sorry, ignoring base class '{b}' because expected source file does not exist: {expectedBaseClassPath} ";
+                        sb.AppendLine($"// {warningMessage}");
+                        VSHelpers.WriteOnOutputWindow(warningMessage);
+                        // remove placeholder from sbBody to prevent "extends " to be inserted later
+                        sbBody.Replace("#{ExtendsPlaceholder_" + b + "}", string.Empty);
                     }
-
-                    sb.AppendLine($"import {{ {b} }} from \"./{b}.generated\";");
-                    imports.Add(b);
+                    else
+                    {
+                        sb.AppendLine($"import {{ {b} }} from \"./{b}.generated\";");
+                        imports.Add(b);
+                    }
                 }
 
                 var notImportedNeededImports = neededImports.Except(imports).ToList();
                 if (notImportedNeededImports.Any())
                 {
-                    var exceptionForDeveloper =
+                    var warningMessage =
                         $"Sorry, needed imports missing: {string.Join(", ", notImportedNeededImports)}. " +
                         $"Make sure file names match contained class/enum name.";
-                    sb.AppendLine($"// {exceptionForDeveloper}");
-                    VSHelpers.WriteOnOutputWindow(exceptionForDeveloper);
-                    //throw new ExceptionForUser(exceptionForDeveloper);
+                    sb.AppendLine($"// {warningMessage}");
+                    VSHelpers.WriteOnOutputWindow(warningMessage);
                 }
+            }
+
+            foreach (var placeholder in ExtendsPlaceholders)
+            {
+                sbBody.Replace("#{ExtendsPlaceholder_" + placeholder.Key + "}", placeholder.Value);
             }
 
             sb.Append(sbBody);
