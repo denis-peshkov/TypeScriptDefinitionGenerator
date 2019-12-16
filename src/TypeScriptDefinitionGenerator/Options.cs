@@ -106,12 +106,15 @@ namespace TypeScriptDefinitionGenerator
         private const string OVERRIDE_FILE_NAME = "tsdefgen.json";
 
         private static OptionsOverride overrides { get; set; } = null;
+        internal static bool? CamelCaseEnumerationValuesOverride { private get; set; } = null;
+        internal static bool? CamelCasePropertyNamesOverride { private get; set; } = null;
+        internal static bool? CamelCaseTypeNamesOverride { private get; set; } = null;
 
-        public static bool CamelCaseEnumerationValues => overrides?.CamelCaseEnumerationValues ?? DtsPackage.Options.CamelCaseEnumerationValues;
+        public static bool CamelCaseEnumerationValues => CamelCaseEnumerationValuesOverride ?? overrides?.CamelCaseEnumerationValues ?? DtsPackage.Options.CamelCaseEnumerationValues;
 
-        public static bool CamelCasePropertyNames => overrides?.CamelCasePropertyNames ?? DtsPackage.Options.CamelCasePropertyNames;
+        public static bool CamelCasePropertyNames => CamelCasePropertyNamesOverride ?? overrides?.CamelCasePropertyNames ?? DtsPackage.Options.CamelCasePropertyNames;
 
-        public static bool CamelCaseTypeNames => overrides?.CamelCaseTypeNames ?? DtsPackage.Options.CamelCaseTypeNames;
+        public static bool CamelCaseTypeNames => CamelCaseTypeNamesOverride ?? overrides?.CamelCaseTypeNames ?? DtsPackage.Options.CamelCaseTypeNames;
 
         public static string DefaultModuleName => overrides?.DefaultModuleName ?? DtsPackage.Options.DefaultModuleName;
 
