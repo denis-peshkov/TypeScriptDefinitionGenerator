@@ -28,11 +28,44 @@ namespace TypeScriptDefinitionGenerator
             if (underProcess == null)
                 underProcess = new HashSet<CodeClass>();
 
+            Options.CamelCaseEnumerationValuesOverride = null;
+            Options.CamelCasePropertyNamesOverride = null;
+            Options.CamelCaseTypeNamesOverride = null;
+
             foreach (CodeElement element in item.FileCodeModel.CodeElements)
             {
                 if (element.Kind == vsCMElement.vsCMElementNamespace)
                 {
                     CodeNamespace cn = (CodeNamespace)element;
+                    var summary = GetSummary(cn);
+                    if (summary != null) {
+                        var match = Regex.Match(summary, ".*CamelCaseEnumerationValuesOverride:\\s*(?<Value>(true)|(false))", RegexOptions.IgnoreCase);
+                        if (match.Success)
+                        {
+                            if (bool.TryParse(match.Groups["Value"].Value, out bool value)) 
+                            {
+                                Options.CamelCaseEnumerationValuesOverride = value;
+                            }
+                        }
+
+                        match = Regex.Match(summary, ".*CamelCasePropertyNamesOverride:\\s*(?<Value>(true)|(false))", RegexOptions.IgnoreCase);
+                        if (match.Success)
+                        {
+                            if (bool.TryParse(match.Groups["Value"].Value, out bool value))
+                            {
+                                Options.CamelCasePropertyNamesOverride = value;
+                            }
+                        }
+
+                        match = Regex.Match(summary, ".*CamelCaseTypeNamesOverride:\\s*(?<Value>(true)|(false))", RegexOptions.IgnoreCase);
+                        if (match.Success)
+                        {
+                            if (bool.TryParse(match.Groups["Value"].Value, out bool value))
+                            {
+                                Options.CamelCaseTypeNamesOverride = value;
+                            }
+                        }
+                    }
 
                     foreach (CodeElement member in cn.Members)
                     {
@@ -427,6 +460,8 @@ namespace TypeScriptDefinitionGenerator
         }
 
         // External items throw an exception from the DocComment getter
+        private static string GetSummary(CodeNamespace property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
+
         private static string GetSummary(CodeProperty property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
 
         private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
