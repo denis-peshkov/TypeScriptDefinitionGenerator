@@ -1,5 +1,5 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+# TypeScript Definition Generator — VSIX and Rider plugin build
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
 name: .NET
 
@@ -14,38 +14,38 @@ on:
   pull_request:
     branches:
       - master
-  workflow_dispatch: # <-- вот это даёт ручной запуск
+  workflow_dispatch:
 
 jobs:
   build:
-    permissions: # <-- https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#defining-access-for-the-github_token-scopes
+    permissions:
       contents: write
 
     env:
-      BUILD_CONFIG: 'Release'
-      SOLUTION: 'Cross.EdiEngine.sln'
+      BUILD_CONFIG: Release
+      SOLUTION: TypeScriptDefinitionGenerator.slnx
 
-    runs-on: ubuntu-22.04 # ubuntu-latest
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Disabling shallow clones is recommended for improving the relevancy of reporting
           fetch-depth: 0
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
         with:
-          dotnet-version: |
-            6.0.x
-            7.0.x
-            8.0.x
-            9.0.x
-            10.0.x
+          vs-version: "[17.0,18.0)"
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2.0.0
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: microsoft
+          java-version: "17"
 
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v1.1.1
@@ -53,72 +53,68 @@ jobs:
           versionSpec: 5.12.0
 
       - name: Determine Version
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v1.1.1
         with:
           useConfigFile: true
 
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Build
+      - name: Increment VSIX version
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
-          dotnet build "$SOLUTION" --configuration "$BUILD_CONFIG" --no-restore \
-            -p:Configuration=$BUILD_CONFIG \
-            -p:Version=${GitVersion_SemVer} \
-            -p:AssemblyVersion=${GitVersion_AssemblySemVer} \
-            -p:FileVersion=${GitVersion_AssemblySemFileVer} \
-            -p:InformationalVersion="${GitVersion_InformationalVersion}" \
-            -p:Company="Denis Peshkov" \
-            -p:Product="Cross.EdiEngine" \
-            -p:Description="Cross.EdiEngine: Simple .NET EDI Reader and Writer and Validator. Read and Write and Validate X12 EDI files with simple EDI Parser written on C#. Published on Nuget at https://www.nuget.org/packages/Cross.EdiEngine" \
-            -p:RepositoryUrl="https://github.com/denis-peshkov/Cross.EdiEngine.git" \
-            -p:RepositoryType=git \
-            -p:CLSCompliant=true \
-            -p:NeutralLanguage=en
+          $manifest = "src/TypeScriptDefinitionGenerator/source.extension.vsixmanifest"
+          $csFile = "src/TypeScriptDefinitionGenerator/source.extension.cs"
+          $newVersion = "${{ steps.gitversion.outputs.assemblySemFileVer }}"
+          if ([string]::IsNullOrWhiteSpace($newVersion)) { $newVersion = "${{ steps.gitversion.outputs.majorMinorPatch }}.0" }
+          $initialVersion = "2.2.0.0"
+          [xml]$xml = Get-Content $manifest
+          $ns = New-Object System.Xml.XmlNamespaceManager $xml.NameTable
+          $ns.AddNamespace("ns", $xml.DocumentElement.NamespaceURI) | Out-Null
+          $attr = $xml.SelectSingleNode("//ns:Identity", $ns).Attributes["Version"]
+          $attr.Value = $newVersion
+          $xml.Save($manifest)
+          (Get-Content $csFile) -replace [regex]::Escape($initialVersion), $newVersion | Set-Content $csFile
+          echo "VERSION=$newVersion" >> $env:GITHUB_ENV
 
-      - name: Run tests
-        run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal
+      - name: Restore
+        run: msbuild $env:SOLUTION /t:restore /p:configuration=$env:BUILD_CONFIG /v:m
 
-      - name: SonarQube Scan
-        uses: sonarsource/sonarcloud-github-action@v5 # Ex: v4.0.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
-        with:
-          #          projectBaseDir: app/
-          #          args: >
-          #            -Dsonar.organization=peshkov
-          #            -Dsonar.projectKey=Cross.EdiEngine
-          #            -Dsonar.python.coverage.reportPaths=coverage.xml
-          #            -Dsonar.sources=Cross.EdiEngine/
-          #            -Dsonar.tests=tests/
-          #            -Dsonar.test.exclusions=tests/**
-          #            -Dsonar.verbose=true
-          args: >
-            -Dsonar.organization=peshkov
-            -Dsonar.projectKey=Cross.EdiEngine
-            -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.sources=EdiEngine/
-            -Dsonar.verbose=true
+      - name: Build VSIX
+        run: msbuild $env:SOLUTION /t:TypeScriptDefinitionGenerator /p:configuration=$env:BUILD_CONFIG /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+
+      - name: Build Rider plugin
+        run: bash build-rider-plugin.sh $env:BUILD_CONFIG ${{ steps.gitversion.outputs.semVer }}
+
+      - name: Publish to VSIX Gallery
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        run: |
+          $vsix = Get-ChildItem -Path . -Filter "*.vsix" -Recurse | Where-Object { $_.FullName -like "*TypeScriptDefinitionGenerator*" -and $_.FullName -notlike "*obj*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if ($vsix) {
+            $repo = [System.Web.HttpUtility]::UrlEncode("https://github.com/$env:GITHUB_REPOSITORY/")
+            $issueTracker = [System.Web.HttpUtility]::UrlEncode("https://github.com/$env:GITHUB_REPOSITORY/issues/")
+            Add-Type -AssemblyName System.Web
+            $url = "http://vsixgallery.com/api/upload?repo=$repo&issuetracker=$issueTracker"
+            Invoke-WebRequest $url -Method Post -Body ([System.IO.File]::ReadAllBytes($vsix.FullName)) -UseBasicParsing
+            Write-Host "VSIX Gallery: OK"
+          }
+
+      - name: Publish to marketplaces
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        run: ./publish-marketplace.ps1
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          VS_MARKETPLACE_PAT: ${{ secrets.VS_MARKETPLACE_PAT }}
+          JETBRAINS_MARKETPLACE_TOKEN: ${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
 
-      - name: Nuget Pack
-        run: nuget pack _nuget/config.nuspec -Symbols -Version ${{ env.semVer }}
-
-      - name: ref
-        run: echo "github.head_ref 1 ${{ github.head_ref }} 2 $GITHUB_REF 3 ${{ github.ref }}"
-
-      - name: Create git Tag
-        if: ${{ contains('refs/heads/hotfix', github.ref) || contains('refs/heads/release', github.ref) || contains('refs/heads/master', github.ref) }}
+      - name: Prepare artifacts
         run: |
-          git tag v${{ env.semVer }}
+          New-Item -ItemType Directory -Path artifacts -Force
+          $vsix = Get-ChildItem -Path . -Filter "*.vsix" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -like "*TypeScriptDefinitionGenerator*" -and $_.FullName -notlike "*obj*" } | Select-Object -First 1
+          if ($vsix) { Copy-Item $vsix.FullName -Destination "artifacts/TypeScriptDefinitionGenerator.vsix" -Force }
+          $riderVer = "${{ steps.gitversion.outputs.semVer }}"
+          $riderZip = "output/TypeScriptDefinitionGenerator.Rider-$riderVer.zip"
+          if (Test-Path $riderZip) { Copy-Item $riderZip -Destination "artifacts/" -Force }
 
-      - name: Push git Tag
-        if: ${{ contains(fromJson('["refs/heads/master", "refs/heads/release", "refs/heads/hotfix"]'), github.ref) }}
-        run: |
-          git config --global user.name 'Denis Peshkov'
-          git config --global user.email 'denis.peshkov@outlook.com'
-          git remote set-url origin https://x-access-token:${{ secrets.TAGTOKEN }}@github.com/${{ github.repository }}
-          git push origin v${{ env.semVer }}
-
-      - name: Nuget Push
-        if: ${{ !startsWith(github.ref, 'refs/pull') }}
-        run: nuget push **/Cross.EdiEngine.${{ env.semVer }}.symbols.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source "https://api.nuget.org/v3/index.json" -SkipDuplicate
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: artifacts/
