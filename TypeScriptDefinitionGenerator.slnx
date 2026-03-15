@@ -1,14 +1,26 @@
 <Solution>
+  <Folder Name="/.github/">
+    <File Path=".github\CONTRIBUTING.md" />
+    <File Path=".github\ISSUE_TEMPLATE.md" />
+  </Folder>
+  <Folder Name="/.github/workflows/">
+    <File Path=".github\workflows\dotnet.yml" />
+  </Folder>
   <Folder Name="/assets/">
     <File Path=".gitignore" />
     <File Path="appveyor.yml" />
     <File Path="build-rider-plugin.sh" />
     <File Path="CHANGELOG.md" />
+    <File Path="GitVersion.yml" />
     <File Path="LICENSE" />
+    <File Path="overview.md" />
+    <File Path="publish-marketplace.ps1" />
     <File Path="README-RIDER.md" />
     <File Path="README.md" />
+    <File Path="vs-publish.json" />
   </Folder>
   <Project Path="src/TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj" />
+  <Project Path="src/TypeScriptDefinitionGenerator.MSBuild/TypeScriptDefinitionGenerator.MSBuild.csproj" />
   <Project Path="src/TypeScriptDefinitionGenerator.Core/TypeScriptDefinitionGenerator.Core.csproj" />
   <Project Path="src/TypeScriptDefinitionGenerator.Rider/TypeScriptDefinitionGenerator.Rider.csproj" />
   <Project Path="src/TypeScriptDefinitionGenerator/TypeScriptDefinitionGenerator.csproj" />

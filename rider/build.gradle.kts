@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.typescriptdefinitiongenerator"
-version = "1.0.0"
+version = project.findProperty("version") as String? ?: "1.0.0"
 
 repositories {
     mavenCentral()

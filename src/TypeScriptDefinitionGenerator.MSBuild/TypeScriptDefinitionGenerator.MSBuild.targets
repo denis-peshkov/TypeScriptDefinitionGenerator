@@ -3,24 +3,12 @@
   <!--
     TypeScript Definition Generator — MSBuild integration.
     Generates .d.ts from .cs when the source file changes (incremental build).
-
-    Usage: add to your .csproj:
-      <Import Project="path/to/TypeScriptDefinitionGenerator.targets" />
-
-    Set TypeScriptDefinitionGeneratorCliProject to path to TypeScriptDefinitionGenerator.Cli.csproj
-    if not using the default (relative to this targets file).
-    Or install tsdefgen as dotnet tool and leave TypeScriptDefinitionGeneratorCliProject empty.
+    Use TypeScriptDefinitionGeneratorUseTool=true (default in this package) for dotnet tsdefgen.
   -->
   <PropertyGroup>
     <TypeScriptDefinitionGeneratorCliProject Condition="'$(TypeScriptDefinitionGeneratorCliProject)' == ''">$(MSBuildThisFileDirectory)../src/TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj</TypeScriptDefinitionGeneratorCliProject>
     <_TsDefGenUseTool Condition="'$(TypeScriptDefinitionGeneratorUseTool)' == 'true'">true</_TsDefGenUseTool>
   </PropertyGroup>
-
-  <!-- Add TypeScriptDefinitionSource items for .cs files that should generate .d.ts, e.g.:
-       <ItemGroup>
-         <TypeScriptDefinitionSource Include="base\ThirdClass.cs" />
-       </ItemGroup>
-  -->
 
   <Target Name="GenerateTypeScriptDefinitions"
           BeforeTargets="BeforeBuild"

@@ -1,6 +1,6 @@
 # TypeScript Definition Generator
 
-[![Build status](https://ci.appveyor.com/api/projects/status/lbuvy4vnkky4ycsb/branch/master?svg=true)](https://ci.appveyor.com/project/denis-peshkov/typescriptdefinitiongenerator/branch/master)
+[![.NET](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/actions/workflows/dotnet.yml/badge.svg)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/actions/workflows/dotnet.yml)
 
 ## NOTE: This is a customed redistribute
 The orginal repo wrote by @madskristensen, **best regard for him**!
@@ -100,6 +100,24 @@ Every time the C# file is modified and saved, the content of the .d.ts file is u
 Configure this extension from the **Tools -> Options -> Text Editor -> JavaScript/TypeScript -> Generate d.ts** dialog.
 
 ![Settings](art/settings.png)
+
+## NuGet (MSBuild + dotnet tool)
+
+Для автогенерации .d.ts при сборке добавьте пакет:
+
+```bash
+dotnet add package TypeScriptDefinitionGenerator.MSBuild
+```
+
+Пакет подключает MSBuild targets и dotnet tool `tsdefgen`. В .csproj добавьте:
+
+```xml
+<ItemGroup>
+  <TypeScriptDefinitionSource Include="Models\**\*.cs" />
+</ItemGroup>
+```
+
+См. [README-RIDER.md](README-RIDER.md) для полной конфигурации.
 
 ## JetBrains Rider
 

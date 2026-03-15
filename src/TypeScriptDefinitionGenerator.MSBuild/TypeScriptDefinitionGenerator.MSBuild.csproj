@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnablePreviewFeatures>false</EnablePreviewFeatures>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
+    <PackageId>TypeScriptDefinitionGenerator.MSBuild</PackageId>
+    <PackageVersion>2.2.0</PackageVersion>
+    <Authors>Denis Peshkov</Authors>
+    <Description>MSBuild targets for TypeScript Definition Generator. Generates .d.ts from C# model classes during build. Requires dotnet tool tsdefgen (TypeScriptDefinitionGenerator.Cli).</Description>
+    <PackageTags>typescript;d.ts;code-generator;msbuild;dto</PackageTags>
+    <PackageProjectUrl>https://github.com/denis-peshkov/TypeScriptDefinitionGenerator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/denis-peshkov/TypeScriptDefinitionGenerator</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="TypeScriptDefinitionGenerator.MSBuild.props" Pack="true" PackagePath="build\TypeScriptDefinitionGenerator.MSBuild.props" />
+    <Content Include="TypeScriptDefinitionGenerator.MSBuild.targets" Pack="true" PackagePath="build\TypeScriptDefinitionGenerator.MSBuild.targets" />
+  </ItemGroup>
+</Project>

@@ -154,22 +154,14 @@ class GenerateTypeScriptDefinitionAction : AnAction() {
         if (!content.contains("None Update=\"$relativeGenerated\"")) {
             content = addOrCreateItemGroup(content, "None", noneItem)
         }
-        val buildTargetsPath = File(solutionDir, "build/TypeScriptDefinitionGenerator.targets")
-        val dirBuildTargets = File(projectDir, "Directory.Build.targets")
-        val createdDirBuild = buildTargetsPath.exists() && !dirBuildTargets.exists()
-        if (createdDirBuild) {
-            val targetsRelPath = projectPath.relativize(buildTargetsPath.toPath()).toString().replace("\\", "/")
-            val dirBuildContent = """<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildThisFileDirectory)$targetsRelPath" />
-</Project>
-"""
-            dirBuildTargets.writeText(dirBuildContent, Charsets.UTF_8)
+        val packageRef = """<PackageReference Include="TypeScriptDefinitionGenerator.MSBuild" Version="2.2.*" />"""
+        if (!content.contains("TypeScriptDefinitionGenerator.MSBuild")) {
+            content = addOrCreateItemGroup(content, "PackageReference", packageRef)
         }
         if (content != originalContent) {
             csproj.writeText(content, Charsets.UTF_8)
         }
-        if (content != originalContent || createdDirBuild) {
+        if (content != originalContent) {
             LocalFileSystem.getInstance().refreshAndFindFileByIoFile(projectDir)
         }
     }
@@ -178,12 +170,14 @@ class GenerateTypeScriptDefinitionAction : AnAction() {
         val pathAttr = when (itemName) {
             "TypeScriptDefinitionSource" -> Regex("""Include="([^"]+)"""")
             "None" -> Regex("""Update="([^"]+)"""")
+            "PackageReference" -> Regex("""Include="([^"]+)"""")
             else -> return content
         }
         val newPath = pathAttr.find(newItem)?.groupValues?.get(1) ?: return content
         val itemRegex = when (itemName) {
             "TypeScriptDefinitionSource" -> Regex("""<TypeScriptDefinitionSource\s+Include="[^"]+"\s*/>""")
             "None" -> Regex("""<None\s+Update="[^"]+"[^>]*>[\s\S]*?</None>""")
+            "PackageReference" -> Regex("""<PackageReference\s+Include="[^"]+"[^/]*/>""")
             else -> return content
         }
         val itemGroupRegex = Regex("""<ItemGroup>(\s*)(.*?)(\s*)</ItemGroup>""", RegexOption.DOT_MATCHES_ALL)

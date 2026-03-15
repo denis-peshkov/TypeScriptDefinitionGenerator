@@ -7,6 +7,13 @@
 These are the changes to each version that has been released
 on the official Visual Studio extension gallery.
 
+## 2.3.0 (unreleased)
+
+- [x] NuGet-пакет `TypeScriptDefinitionGenerator.MSBuild` — MSBuild targets для автогенерации при сборке
+- [x] NuGet-пакет `TypeScriptDefinitionGenerator.Cli` — dotnet tool `tsdefgen`
+- [x] Rider-плагин добавляет `PackageReference` вместо `Directory.Build.targets` и `Import`
+- [x] Публикация пакетов в nuget.org через GitHub Actions
+
 ## 2.2.0
 - [x] Removed useless files
 - [x] Refactoring / code optimizing

@@ -85,6 +85,14 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      - name: Set NuGet package version
+        run: |
+          $nugetVersion = "${{ env.semVer }}"
+          if ([string]::IsNullOrWhiteSpace($nugetVersion)) { $nugetVersion = "2.2.0" }
+          (Get-Content "src/TypeScriptDefinitionGenerator.MSBuild/TypeScriptDefinitionGenerator.MSBuild.csproj") -replace '<PackageVersion>[^<]+</PackageVersion>', "<PackageVersion>$nugetVersion</PackageVersion>" | Set-Content "src/TypeScriptDefinitionGenerator.MSBuild/TypeScriptDefinitionGenerator.MSBuild.csproj"
+          (Get-Content "src/TypeScriptDefinitionGenerator.MSBuild/TypeScriptDefinitionGenerator.MSBuild.props") -replace 'Version="[^"]+"', "Version=`"$nugetVersion`"" | Set-Content "src/TypeScriptDefinitionGenerator.MSBuild/TypeScriptDefinitionGenerator.MSBuild.props"
+          echo "NUGET_VERSION=$nugetVersion" >> $env:GITHUB_ENV
+
       - name: Increment VSIX version
         if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
         run: |
@@ -110,6 +118,22 @@ jobs:
 
       - name: Build Rider plugin
         run: bash build-rider-plugin.sh $env:BUILD_CONFIG "${{ env.semVer }}"
+
+      - name: Pack NuGet packages
+        run: |
+          New-Item -ItemType Directory -Path artifacts/nuget -Force
+          dotnet pack src/TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj -c $env:BUILD_CONFIG -o artifacts/nuget -p:PackageVersion=$env:NUGET_VERSION
+          dotnet pack src/TypeScriptDefinitionGenerator.MSBuild/TypeScriptDefinitionGenerator.MSBuild.csproj -c $env:BUILD_CONFIG -o artifacts/nuget -p:PackageVersion=$env:NUGET_VERSION
+
+      - name: Publish to NuGet.org
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        run: |
+          $pkgs = Get-ChildItem -Path artifacts/nuget -Filter "*.nupkg" -ErrorAction SilentlyContinue
+          foreach ($pkg in $pkgs) {
+            dotnet nuget push $pkg.FullName --source https://api.nuget.org/v3/index.json --api-key $env:NUGET_API_KEY --skip-duplicate
+          }
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
       - name: ref
         run: echo "github.head_ref 1 ${{ github.head_ref }} 2 $GITHUB_REF 3 ${{ github.ref }}"

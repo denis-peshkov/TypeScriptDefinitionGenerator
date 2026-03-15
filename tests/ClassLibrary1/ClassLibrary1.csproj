@@ -10,5 +10,14 @@
     <Platforms>AnyCPU</Platforms>
     <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <TypeScriptDefinitionSource Include="base\ThirdClass.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="base\ThirdClass.generated.d.ts">
+      <DependentUpon>base\ThirdClass.cs</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

@@ -4,13 +4,17 @@
 
 ## Способ 1: External Tool (рекомендуется)
 
-1. **Соберите и установите dotnet tool:**
+1. **Установите dotnet tool:**
+   ```bash
+   dotnet tool install -g TypeScriptDefinitionGenerator.Cli
+   ```
+   Или из исходников:
    ```bash
    cd src/TypeScriptDefinitionGenerator.Cli
    dotnet pack -c Release
    dotnet tool install -g --add-source ./bin/Release TypeScriptDefinitionGenerator.Cli
    ```
-   Или запускайте напрямую:
+   Или запускайте напрямую (без установки):
    ```bash
    dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- $FilePath$
    ```
@@ -19,7 +23,7 @@
    - **Settings** → **Tools** → **External Tools** → **Add**
    - **Name:** Generate TypeScript Definition
    - **Program:** `dotnet`
-   - **Arguments:** `run --project src/TypeScriptDefinitionGenerator.Cli -- $FilePath$`
+   - **Arguments:** `tsdefgen $FilePath$` (при установленном tool) или `run --project src/TypeScriptDefinitionGenerator.Cli -- $FilePath$` (при работе из исходников)
    - **Working directory:** `$ContentRoot$`
    - Включите **Synchronize files after execution**
 
@@ -30,11 +34,12 @@
 ## Способ 2: Запуск из терминала
 
 ```bash
-# Один файл (укажите путь к вашему .cs файлу)
-dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- path/to/YourDto.cs
+# Через dotnet tool (после: dotnet tool install -g TypeScriptDefinitionGenerator.Cli)
+dotnet tsdefgen path/to/YourDto.cs
+dotnet tsdefgen path/to/Dto1.cs path/to/Dto2.cs
 
-# Несколько файлов
-dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- path/to/Dto1.cs path/to/Dto2.cs
+# Или напрямую из исходников
+dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- path/to/YourDto.cs
 ```
 
 ## Конфигурация (tsdefgen.json)
@@ -57,7 +62,33 @@ dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- path/to/Dto1.cs pa
 
 ## Автогенерация при сборке (MSBuild)
 
-При изменении .cs файла можно автоматически перегенерировать .d.ts при сборке. Добавьте в .csproj:
+При изменении .cs файла можно автоматически перегенерировать .d.ts при сборке.
+
+### Вариант 1: NuGet-пакет (рекомендуется)
+
+```bash
+dotnet add package TypeScriptDefinitionGenerator.MSBuild
+```
+
+Пакет добавляет `DotNetToolReference` на `TypeScriptDefinitionGenerator.Cli` и MSBuild targets. Добавьте в .csproj:
+
+```xml
+<ItemGroup>
+  <PackageReference Include="TypeScriptDefinitionGenerator.MSBuild" Version="2.2.*" />
+</ItemGroup>
+
+<ItemGroup>
+  <TypeScriptDefinitionSource Include="Models\Dto.cs" />
+</ItemGroup>
+
+<ItemGroup>
+  <None Update="Models\Dto.generated.d.ts">
+    <DependentUpon>Dto.cs</DependentUpon>
+  </None>
+</ItemGroup>
+```
+
+### Вариант 2: Локальный targets (для разработки в репозитории TypeScriptDefinitionGenerator)
 
 ```xml
 <Import Project="path/to/build/TypeScriptDefinitionGenerator.targets" />
@@ -121,6 +152,6 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 17)   # macOS
 Плагин запускает `dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- <путь-к-файлу>` в каталоге решения.
 
 При успешной генерации плагин автоматически добавляет в .csproj:
-- `TypeScriptDefinitionSource` — для автогенерации при сборке
-- `None` с `DependentUpon` — для отображения в Solution Explorer
-- `Directory.Build.targets` — при первом запуске (если targets есть в `build/`)
+- `PackageReference` на `TypeScriptDefinitionGenerator.MSBuild` — MSBuild targets и dotnet tool для автогенерации при сборке
+- `TypeScriptDefinitionSource` — список .cs файлов для генерации
+- `None` с `DependentUpon` — для отображения .d.ts в Solution Explorer
