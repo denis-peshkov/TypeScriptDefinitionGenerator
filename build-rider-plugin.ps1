@@ -98,12 +98,12 @@ if (-not $DOTNET_ONLY) {
                 bash -c "./gradlew buildPlugin -Pversion=$VERSION -q"
                 if ($LASTEXITCODE -eq 0) { $KOTLIN_BUILT = $true }
             }
-            if (-not $KOTLIN_BUILT) { Write-Host "  Skipping Kotlin (use gradlew.bat or run build-rider-plugin.sh in Git Bash/WSL)." }
+            if (-not $KOTLIN_BUILT) { Write-Host "  Skipping Kotlin (use gradlew.bat or run build-rider-plugin.sh in Git Bash/WSL)." -ForegroundColor Red }
         } finally {
             Pop-Location
         }
     } else {
-        if (-not $hasJava17) { Write-Host "  Skipping Kotlin (Java 17+ required). Set JAVA_HOME or use --dotnet-only." }
+        if (-not $hasJava17) { Write-Host "  Skipping Kotlin (Java 17+ required). Set JAVA_HOME or use --dotnet-only." -ForegroundColor Red }
         elseif (-not (Test-Path "rider\gradlew.bat")) { Write-Host "  Skipping Kotlin (rider\gradlew.bat not found; add it or use build-rider-plugin.sh on Unix)." }
     }
 }
