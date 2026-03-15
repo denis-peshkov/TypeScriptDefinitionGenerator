@@ -41,6 +41,9 @@ public class GenerationService : IWpfTextViewCreationListener
     {
         if (e.FileActionType != FileActionTypes.ContentSavedToDisk)
             return;
+        var ext = Path.GetExtension(e.FilePath);
+        if (!Constants.SupportedSourceExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            return;
         _item = VSHelpers.GetProjectItem(e.FilePath);
         Options.ReadOptionOverrides(_item, false);
         string fileName = Utility.GenerateFileName(e.FilePath);
@@ -83,6 +86,9 @@ public class GenerationService : IWpfTextViewCreationListener
     public static void CreateDtsFile(ProjectItem sourceItem)
     {
         string sourceFile = sourceItem.FileNames[1];
+        var ext = Path.GetExtension(sourceFile);
+        if (!Constants.SupportedSourceExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            return;
         string dtsFile = Utility.GenerateFileName(sourceFile);
         string dts = ConvertToTypeScript(sourceItem);
 

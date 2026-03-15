@@ -6,7 +6,7 @@
     Use TypeScriptDefinitionGeneratorUseTool=true (default in this package) for dotnet tsdefgen.
   -->
   <PropertyGroup>
-    <TypeScriptDefinitionGeneratorCliProject Condition="'$(TypeScriptDefinitionGeneratorCliProject)' == ''">$(MSBuildThisFileDirectory)../src/TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj</TypeScriptDefinitionGeneratorCliProject>
+    <TypeScriptDefinitionGeneratorCliProject Condition="'$(TypeScriptDefinitionGeneratorCliProject)' == ''">$(MSBuildThisFileDirectory)../TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj</TypeScriptDefinitionGeneratorCliProject>
     <_TsDefGenUseTool Condition="'$(TypeScriptDefinitionGeneratorUseTool)' == 'true'">true</_TsDefGenUseTool>
   </PropertyGroup>
 

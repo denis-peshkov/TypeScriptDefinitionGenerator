@@ -1,4 +1,4 @@
-﻿using EnvDTE;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using System;
@@ -81,6 +81,12 @@ internal sealed class ToggleCustomTool
 
     private void Execute(object sender, EventArgs e)
     {
+        if (_item == null)
+            return;
+        var ext = Path.GetExtension(_item.FileNames[1]);
+        if (!Constants.SupportedSourceExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
+            return;
+
         Options.ReadOptionOverrides(_item, false);
         // .NET Core and Website projects
         if (_item.ContainingProject.IsKind(ProjectTypes.DOTNET_Core, ProjectTypes.ASPNET_5, ProjectTypes.WEBSITE_PROJECT))

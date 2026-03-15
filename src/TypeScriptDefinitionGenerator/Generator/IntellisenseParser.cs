@@ -1,4 +1,4 @@
-﻿using EnvDTE;
+using EnvDTE;
 using EnvDTE80;
 using System;
 using System.Collections.Generic;
@@ -176,7 +176,7 @@ internal static class IntellisenseParser
     private static bool HasIgnoreAttribute(CodeAttribute attribute)
     {
         return attribute.FullName == "System.Runtime.Serialization.IgnoreDataMemberAttribute" ||
-               attribute.FullName == "Newtonsoft.Json.JsonIgnoreAttribute" ||
+               attribute.FullName == "System.Text.Json.Serialization.JsonIgnoreAttribute" ||
                attribute.FullName == "System.Web.Script.Serialization.ScriptIgnoreAttribute";
     }
 

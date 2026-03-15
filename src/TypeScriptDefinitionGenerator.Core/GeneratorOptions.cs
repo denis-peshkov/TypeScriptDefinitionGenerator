@@ -2,7 +2,10 @@ namespace TypeScriptDefinitionGenerator.Core;
 
 public enum EOLType
 {
+    /// <summary>Unix</summary>
     LF,
+
+    /// <summary>Windows</summary>
     CRLF
 }
 

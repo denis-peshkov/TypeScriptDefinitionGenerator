@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
@@ -10,7 +10,8 @@
     <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
-    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <!-- false = legacy .resources format so VSSDK CTO merger can read it (no DeserializingResourceReader) -->
+    <GenerateResourceUsePreserializedResources>false</GenerateResourceUsePreserializedResources>
 
     <OutputType>Library</OutputType>
     <RootNamespace>TypeScriptDefinitionGenerator</RootNamespace>
@@ -51,10 +52,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\..\LICENSE" Link="Resources\LICENSE" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\LICENSE" Link="Resources\LICENSE" CopyToOutputDirectory="PreserveNewest">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="website.pkgdef" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="source.extension.ico" />
-    <Content Include="Resources\Icon.png" />
+    <Content Include="Resources\Icon.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -127,6 +127,8 @@ dotnet add package TypeScriptDefinitionGenerator.MSBuild
 
 Расширение использует SDK-style проект (PackageReference). Сборка возможна **только на Windows** с установленной Visual Studio 2022, т.к. VSSDK требует vsct.exe для компиляции меню.
 
+При сборке через `dotnet build` для проекта Visual Studio Extension (VSIX) требуется **.NET 8 SDK**: `global.json` в корне репозитория привязывает сборку к SDK 8.0.x (из‑за ограничений VSSDK.BuildTools на .NET 10+). Установите [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) или собирайте расширение из Visual Studio (Build Solution).
+
 ## Contribute
 Check out the [contribution guidelines](.github/CONTRIBUTING.md)
 if you want to contribute to this project.

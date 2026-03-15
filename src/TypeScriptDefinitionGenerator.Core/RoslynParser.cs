@@ -17,14 +17,14 @@ public class RoslynParser
     private static readonly HashSet<string> IgnoreAttributes = new(StringComparer.OrdinalIgnoreCase)
     {
         "System.Runtime.Serialization.IgnoreDataMemberAttribute",
-        "Newtonsoft.Json.JsonIgnoreAttribute",
+        "System.Text.Json.Serialization.JsonIgnoreAttribute",
         "System.Web.Script.Serialization.ScriptIgnoreAttribute"
     };
 
     private static readonly Dictionary<string, string[]> NameAttributes = new(StringComparer.OrdinalIgnoreCase)
     {
         { "DataMember", new[] { "Name" } },
-        { "JsonProperty", new[] { "", "PropertyName" } }
+        { "JsonPropertyName", new[] { "" } }
     };
 
     public static IEnumerable<IntellisenseObject> ProcessFile(string filePath, string fileContent, IGeneratorOptions options, HashSet<string>? projectFiles = null)
