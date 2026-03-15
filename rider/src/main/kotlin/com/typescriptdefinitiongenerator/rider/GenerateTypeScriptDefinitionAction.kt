@@ -56,6 +56,7 @@ class GenerateTypeScriptDefinitionAction : AnAction() {
         }
 
         try {
+            ensureTsDefGenJson(File(filePath), solutionDir)
             val process = ProcessBuilder(
                 dotnetPath, "run", "--project", cliProjectPath.absolutePath, "--", filePath
             )
@@ -143,8 +144,9 @@ class GenerateTypeScriptDefinitionAction : AnAction() {
         val originalContent = csproj.readText(Charsets.UTF_8)
         var content = originalContent
         val sourceItem = """<TypeScriptDefinitionSource Include="$relativeSource" />"""
+        val sourceFileName = sourceFile.name
         val noneItem = """<None Update="$relativeGenerated">
-      <DependentUpon>$relativeSource</DependentUpon>
+      <DependentUpon>$sourceFileName</DependentUpon>
     </None>"""
         if (!content.contains("TypeScriptDefinitionSource Include=\"$relativeSource\"")) {
             content = addOrCreateItemGroup(content, "TypeScriptDefinitionSource", sourceItem)
@@ -188,11 +190,9 @@ class GenerateTypeScriptDefinitionAction : AnAction() {
         val match = itemGroupRegex.findAll(content).firstOrNull { m ->
             itemRegex.containsMatchIn(m.groupValues[2])
         } ?: run {
-            return content.replace("</Project>", """
-  <ItemGroup>
-    $newItem
-  </ItemGroup>
-</Project>""")
+            return content.replace(Regex("""(\s*)</Project>""")) {
+                "\n\n  <ItemGroup>\n    $newItem\n  </ItemGroup>\n</Project>"
+            }
         }
         val (prefix, block, suffix) = match.destructured
         val existingItems = itemRegex.findAll(block).map { it.value }.toList()
@@ -202,6 +202,28 @@ class GenerateTypeScriptDefinitionAction : AnAction() {
         val itemsContent = allItems.joinToString("\n    ")
         val newItemGroup = "<ItemGroup>$prefix$itemsContent$suffix</ItemGroup>"
         return content.replace(match.value, newItemGroup)
+    }
+
+    private fun ensureTsDefGenJson(sourceFile: File, solutionDir: String) {
+        val projectDir = findCsprojDirectory(sourceFile) ?: return
+        val tsdefgen = File(projectDir, "tsdefgen.json")
+        val s = TsDefGenSettingsService.getInstance().state
+        val json = """{
+  "camelCaseEnumerationValues": ${s.camelCaseEnumerationValues},
+  "camelCasePropertyNames": ${s.camelCasePropertyNames},
+  "camelCaseTypeNames": ${s.camelCaseTypeNames},
+  "webEssentials2015": ${s.webEssentials2015},
+  "classInsteadOfInterface": ${s.classInsteadOfInterface},
+  "defaultModuleName": "${s.defaultModuleName.replace("\\", "\\\\").replace("\"", "\\\"")}",
+  "useNamespace": ${s.useNamespace},
+  "declareModule": ${s.declareModule},
+  "ignoreIntellisense": ${s.ignoreIntellisense},
+  "eolType": "${s.eolType}",
+  "indentTab": ${s.indentTab},
+  "indentTabSize": ${s.indentTabSize}
+}
+"""
+        tsdefgen.writeText(json, Charsets.UTF_8)
     }
 
     private fun findCsprojDirectory(file: File): File? {

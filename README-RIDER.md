@@ -106,6 +106,12 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 17)   # macOS
 3. Выберите `output/TypeScriptDefinitionGenerator.Rider-<version>.zip`
 4. Перезапустите Rider
 
+### Настройки
+
+**Settings** (Ctrl+Alt+S / Cmd+,) → **Tools** → **TypeScript Definition Generator**. Или в поле поиска настроек введите «TypeScript» — откроется страница плагина.
+
+Глобальные настройки генерации (camelCase, module, EOL и т.д.). Сохраняются в конфигурации IDE. При каждой генерации из меню плагин записывает эти настройки в `tsdefgen.json` в корне проекта — CLI использует их.
+
 ### Использование
 
 1. Откройте решение TypeScriptDefinitionGenerator (или любое с CLI в `src/TypeScriptDefinitionGenerator.Cli`)

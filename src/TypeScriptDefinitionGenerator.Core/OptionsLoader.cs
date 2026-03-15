@@ -17,8 +17,8 @@ public static class OptionsLoader
 
     public static IGeneratorOptions LoadFromProjectDirectory(string projectDirectory)
     {
-        var jsonPath = Path.Combine(projectDirectory, OverrideFileName);
-        if (!File.Exists(jsonPath))
+        var jsonPath = FindOverrideFile(projectDirectory);
+        if (jsonPath == null)
             return new GeneratorOptions();
 
         try
@@ -31,5 +31,18 @@ public static class OptionsLoader
         {
             return new GeneratorOptions();
         }
+    }
+
+    private static string? FindOverrideFile(string startDirectory)
+    {
+        var dir = startDirectory;
+        while (!string.IsNullOrEmpty(dir))
+        {
+            var path = Path.Combine(dir, OverrideFileName);
+            if (File.Exists(path))
+                return path;
+            dir = Path.GetDirectoryName(dir);
+        }
+        return null;
     }
 }
