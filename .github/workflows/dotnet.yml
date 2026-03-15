@@ -1,7 +1,7 @@
 # TypeScript Definition Generator — VSIX and Rider plugin build
 # https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: CI
 
 on:
   push:
@@ -14,11 +14,11 @@ on:
   pull_request:
     branches:
       - master
-  workflow_dispatch:
+  workflow_dispatch: # <-- вот это даёт ручной запуск
 
 jobs:
   build:
-    permissions:
+    permissions: # <-- https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#defining-access-for-the-github_token-scopes
       contents: write
 
     env:
@@ -34,6 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Disabling shallow clones is recommended for improving the relevancy of reporting
           fetch-depth: 0
 
       - name: Setup MSBuild
@@ -53,36 +54,64 @@ jobs:
           versionSpec: 5.12.0
 
       - name: Determine Version
-        id: gitversion
         uses: gittools/actions/gitversion/execute@v1.1.1
         with:
           useConfigFile: true
 
-      - name: Increment VSIX version
-        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-        run: |
-          $manifest = "src/TypeScriptDefinitionGenerator/source.extension.vsixmanifest"
-          $csFile = "src/TypeScriptDefinitionGenerator/source.extension.cs"
-          $newVersion = "${{ steps.gitversion.outputs.assemblySemFileVer }}"
-          if ([string]::IsNullOrWhiteSpace($newVersion)) { $newVersion = "${{ steps.gitversion.outputs.majorMinorPatch }}.0" }
-          $initialVersion = "2.2.0.0"
-          [xml]$xml = Get-Content $manifest
-          $ns = New-Object System.Xml.XmlNamespaceManager $xml.NameTable
-          $ns.AddNamespace("ns", $xml.DocumentElement.NamespaceURI) | Out-Null
-          $attr = $xml.SelectSingleNode("//ns:Identity", $ns).Attributes["Version"]
-          $attr.Value = $newVersion
-          $xml.Save($manifest)
-          (Get-Content $csFile) -replace [regex]::Escape($initialVersion), $newVersion | Set-Content $csFile
-          echo "VERSION=$newVersion" >> $env:GITHUB_ENV
-
       - name: Restore
         run: msbuild $env:SOLUTION /t:restore /p:configuration=$env:BUILD_CONFIG /v:m
 
+      - name: Run tests
+        run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarcloud-github-action@v5 # Ex: v4.0.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
+        with:
+          #          projectBaseDir: app/
+          #          args: >
+          #            -Dsonar.organization=peshkov
+          #            -Dsonar.projectKey=Cross.EdiEngine
+          #            -Dsonar.python.coverage.reportPaths=coverage.xml
+          #            -Dsonar.sources=Cross.EdiEngine/
+          #            -Dsonar.tests=tests/
+          #            -Dsonar.test.exclusions=tests/**
+          #            -Dsonar.verbose=true
+          args: >
+            -Dsonar.organization=peshkov
+            -Dsonar.projectKey=Cross.EdiEngine
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.sources=EdiEngine/
+            -Dsonar.verbose=true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: Build VSIX
-        run: msbuild $env:SOLUTION /t:TypeScriptDefinitionGenerator /p:configuration=$env:BUILD_CONFIG /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+        run: >
+          msbuild $env:SOLUTION \
+          /t:TypeScriptDefinitionGenerator \
+          /p:configuration=$env:BUILD_CONFIG \
+          /p:DeployExtension=false \
+          /p:ZipPackageCompressionLevel=normal \
+          /v:m
 
       - name: Build Rider plugin
-        run: bash build-rider-plugin.sh $env:BUILD_CONFIG ${{ steps.gitversion.outputs.semVer }}
+        run: bash build-rider-plugin.sh $env:BUILD_CONFIG ${GitVersion_InformationalVersion}
+
+      - name: ref
+        run: echo "github.head_ref 1 ${{ github.head_ref }} 2 $GITHUB_REF 3 ${{ github.ref }}"
+
+      - name: Create git Tag
+        if: ${{ contains('refs/heads/hotfix', github.ref) || contains('refs/heads/release', github.ref) || contains('refs/heads/master', github.ref) }}
+        run: |
+          git tag v${{ env.semVer }}
+
+      - name: Push git Tag
+        if: ${{ contains(fromJson('["refs/heads/master", "refs/heads/release", "refs/heads/hotfix"]'), github.ref) }}
+        run: |
+          git config --global user.name 'Denis Peshkov'
+          git config --global user.email 'denis.peshkov@outlook.com'
+          git remote set-url origin https://x-access-token:${{ secrets.TAGTOKEN }}@github.com/${{ github.repository }}
+          git push origin v${{ env.semVer }}
 
       - name: Publish to VSIX Gallery
         if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
@@ -109,9 +138,7 @@ jobs:
           New-Item -ItemType Directory -Path artifacts -Force
           $vsix = Get-ChildItem -Path . -Filter "*.vsix" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -like "*TypeScriptDefinitionGenerator*" -and $_.FullName -notlike "*obj*" } | Select-Object -First 1
           if ($vsix) { Copy-Item $vsix.FullName -Destination "artifacts/TypeScriptDefinitionGenerator.vsix" -Force }
-          $riderVer = "${{ steps.gitversion.outputs.semVer }}"
-          $riderZip = "output/TypeScriptDefinitionGenerator.Rider-$riderVer.zip"
-          if (Test-Path $riderZip) { Copy-Item $riderZip -Destination "artifacts/" -Force }
+          if (Test-Path "output/TypeScriptDefinitionGenerator.Rider-${GitVersion_InformationalVersion}.zip") { Copy-Item "output/TypeScriptDefinitionGenerator.Rider-${GitVersion_InformationalVersion}.zip" -Destination "artifacts/" -Force }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
