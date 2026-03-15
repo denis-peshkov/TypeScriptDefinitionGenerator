@@ -11,25 +11,4 @@
     <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
   </PropertyGroup>
   
-  <ItemGroup>
-    <TypeScriptDefinitionSource Include="SecondClass.cs" />
-    <TypeScriptDefinitionSource Include="SomeClassDto.cs" />
-    <TypeScriptDefinitionSource Include="SomeEnum.cs" />
-    <TypeScriptDefinitionSource Include="base\ThirdClass.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="SecondClass.generated.d.ts">
-      <DependentUpon>SecondClass.cs</DependentUpon>
-    </None>
-    <None Update="SomeClassDto.generated.d.ts">
-      <DependentUpon>SomeClassDto.cs</DependentUpon>
-    </None>
-    <None Update="SomeEnum.generated.d.ts">
-      <DependentUpon>SomeEnum.cs</DependentUpon>
-    </None>
-    <None Update="base\ThirdClass.generated.d.ts">
-      <DependentUpon>ThirdClass.cs</DependentUpon>
-    </None>
-  </ItemGroup>
 </Project>
