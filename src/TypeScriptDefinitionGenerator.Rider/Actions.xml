@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<actions>
+  <action id="TypeScriptDefinitionGenerator.GenerateTypeScriptDefinition"
+          class="TypeScriptDefinitionGenerator.Rider.TypeScriptDefinitionGenerator_GenerateTypeScriptDefinitionAction"
+          text="Generate TypeScript Definition"
+          description="Generate .d.ts file from C# model">
+    <add-to-group group-id="ReSharper.Generate" anchor="last"/>
+    <add-to-group group-id="ReSharperProjectItemsContextMenu" anchor="last"/>
+  </action>
+</actions>

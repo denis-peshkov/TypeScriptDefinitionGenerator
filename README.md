@@ -101,6 +101,14 @@ Configure this extension from the **Tools -> Options -> Text Editor -> JavaScrip
 
 ![Settings](art/settings.png)
 
+## JetBrains Rider
+
+Для использования в Rider см. [README-RIDER.md](README-RIDER.md) — плагин с контекстным меню, External Tool или dotnet tool для генерации .d.ts файлов.
+
+## Сборка расширения
+
+Расширение использует SDK-style проект (PackageReference). Сборка возможна **только на Windows** с установленной Visual Studio 2022, т.к. VSSDK требует vsct.exe для компиляции меню.
+
 ## Contribute
 Check out the [contribution guidelines](.github/CONTRIBUTING.md)
 if you want to contribute to this project.

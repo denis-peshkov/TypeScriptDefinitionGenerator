@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnablePreviewFeatures>false</EnablePreviewFeatures>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>tsdefgen</ToolCommandName>
+    <PackageId>TypeScriptDefinitionGenerator.Cli</PackageId>
+    <RootNamespace>TypeScriptDefinitionGenerator.Cli</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TypeScriptDefinitionGenerator.Core\TypeScriptDefinitionGenerator.Core.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,6 +1,6 @@
 ﻿namespace ClassLibrary1;
 
-public class SomeClass
+public class SomeClassDto
 {
     public int Inc1 { get; set; }
 

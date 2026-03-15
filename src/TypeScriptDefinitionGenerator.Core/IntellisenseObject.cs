@@ -1,19 +1,19 @@
 using System;
 using System.Collections.Generic;
 
-namespace TypeScriptDefinitionGenerator;
+namespace TypeScriptDefinitionGenerator.Core;
 
 public class IntellisenseObject : IEquatable<IntellisenseObject>
 {
-    public string Namespace { get; set; }
-    public string Name { get; set; }
-    public string BaseNamespace { get; set; }
-    public string BaseName { get; set; }
-    public string FullName { get; set; }
+    public string Namespace { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? BaseNamespace { get; set; }
+    public string? BaseName { get; set; }
+    public string FullName { get; set; } = string.Empty;
     public bool IsEnum { get; set; }
-    public string Summary { get; set; }
-    public IList<IntellisenseProperty> Properties { get; private set; }
-    public HashSet<string> References { get; private set; }
+    public string? Summary { get; set; }
+    public IList<IntellisenseProperty> Properties { get; }
+    public HashSet<string> References { get; }
 
     public IntellisenseObject()
     {
@@ -24,6 +24,7 @@ public class IntellisenseObject : IEquatable<IntellisenseObject>
     public IntellisenseObject(IList<IntellisenseProperty> properties)
     {
         Properties = properties;
+        References = new HashSet<string>();
     }
 
     public IntellisenseObject(IList<IntellisenseProperty> properties, HashSet<string> references)
@@ -37,9 +38,9 @@ public class IntellisenseObject : IEquatable<IntellisenseObject>
         References.UnionWith(moreReferences);
     }
 
-    public bool Equals(IntellisenseObject other)
+    public bool Equals(IntellisenseObject? other)
     {
-        return !ReferenceEquals(other, null) &&
+        return other != null &&
                other.Name == Name &&
                other.Namespace == Namespace &&
                other.BaseName == BaseName &&
@@ -47,15 +48,20 @@ public class IntellisenseObject : IEquatable<IntellisenseObject>
                other.FullName == FullName;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return Equals(obj as IntellisenseObject);
     }
 
     public override int GetHashCode()
     {
-        return Name.GetHashCode() ^
-               Namespace.GetHashCode() ^
-               FullName.GetHashCode();
+        unchecked
+        {
+            var hash = 17;
+            hash = (hash * 397) ^ (Name?.GetHashCode() ?? 0);
+            hash = (hash * 397) ^ (Namespace?.GetHashCode() ?? 0);
+            hash = (hash * 397) ^ (FullName?.GetHashCode() ?? 0);
+            return hash;
+        }
     }
 }

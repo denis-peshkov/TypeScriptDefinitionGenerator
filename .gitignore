@@ -1,6 +1,9 @@
 packages
 sign
 
+**/.idea
+**/rider
+
 # User files
 *.suo
 *.user
@@ -24,3 +27,7 @@ x64/
 _NCrunch_WebCompiler
 *.generated.d.ts
 *.generated.ts
+
+# Rider plugin build output
+output/
+rider/build/

@@ -1,7 +1,6 @@
-﻿namespace TypeScriptDefinitionGenerator
+﻿namespace TypeScriptDefinitionGenerator;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public static string[] SupportedSourceExtensions { get; } = { ".cs" };
-    }
+    public static string[] SupportedSourceExtensions { get; } = { ".cs" };
 }

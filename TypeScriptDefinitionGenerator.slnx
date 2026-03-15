@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/assets/">
+    <File Path="appveyor.yml" />
+    <File Path="build-rider-plugin.sh" />
+    <File Path="CHANGELOG.md" />
+    <File Path="LICENSE" />
+    <File Path="README-RIDER.md" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="src/TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj" />
+  <Project Path="src/TypeScriptDefinitionGenerator.Core/TypeScriptDefinitionGenerator.Core.csproj" />
+  <Project Path="src/TypeScriptDefinitionGenerator.Rider/TypeScriptDefinitionGenerator.Rider.csproj" />
+  <Project Path="src/TypeScriptDefinitionGenerator/TypeScriptDefinitionGenerator.csproj" />
+  <Project Path="tests/ClassLibrary1/ClassLibrary1.csproj" />
+  <Project Path="tests/TypeScriptDefinitionGenerator.Tests/TypeScriptDefinitionGenerator.Tests.csproj" />
+</Solution>

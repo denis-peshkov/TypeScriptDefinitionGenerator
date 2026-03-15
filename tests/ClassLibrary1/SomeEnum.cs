@@ -1,8 +1,7 @@
-﻿namespace ClassLibrary1
+﻿namespace ClassLibrary1;
+
+public enum SomeEnum
 {
-    public enum SomeEnum
-    {
-        This,
-        That
-    }
+    This,
+    That
 }

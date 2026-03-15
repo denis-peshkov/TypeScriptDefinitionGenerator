@@ -2,30 +2,34 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnablePreviewFeatures>false</EnablePreviewFeatures>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU</Platforms>
+    <NoWarn>1701;1702;1591;CS8618;NU1701;</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Update="base\ThirdClass.cs">
-      <Generator></Generator>
-    </Compile>
-    <Compile Update="SecondClass.cs">
-      <Generator></Generator>
-    </Compile>
-    <Compile Update="SomeClass.cs">
-      <Generator></Generator>
-    </Compile>
-    <Compile Update="SomeEnum.cs">
-      <Generator></Generator>
-    </Compile>
-    <Compile Update="SomeSomeClass.cs">
-      <Generator></Generator>
-    </Compile>
+    <TypeScriptDefinitionSource Include="base\ThirdClass.cs" />
+    <TypeScriptDefinitionSource Include="SomeClass.cs" />
+    <TypeScriptDefinitionSource Include="SomeSomeClass.cs" />
+    <TypeScriptDefinitionSource Include="SomeEnum.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="base\ThirdClass.generated.d.ts">
+      <DependentUpon>base\ThirdClass.cs</DependentUpon>
+    </None>
+    <None Update="SomeClass.generated.d.ts">
+      <DependentUpon>SomeClass.cs</DependentUpon>
+    </None>
     <None Update="SomeSomeClass.generated.d.ts">
       <DependentUpon>SomeSomeClass.cs</DependentUpon>
     </None>
+    <None Update="SomeEnum.generated.d.ts">
+      <DependentUpon>SomeEnum.cs</DependentUpon>
+    </None>
   </ItemGroup>
-
 </Project>
