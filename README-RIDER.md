@@ -68,7 +68,7 @@ dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- path/to/Dto1.cs pa
 
 <ItemGroup>
   <None Update="base\ThirdClass.generated.d.ts">
-    <DependentUpon>base\ThirdClass.cs</DependentUpon>
+    <DependentUpon>ThirdClass.cs</DependentUpon>
   </None>
 </ItemGroup>
 ```
