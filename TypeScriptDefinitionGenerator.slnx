@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/assets/">
+    <File Path=".gitignore" />
     <File Path="appveyor.yml" />
     <File Path="build-rider-plugin.sh" />
     <File Path="CHANGELOG.md" />

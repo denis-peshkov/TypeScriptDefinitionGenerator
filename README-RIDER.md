@@ -113,3 +113,8 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 17)   # macOS
 3. Или в редакторе: Alt+Enter → **Generate** → **Generate TypeScript Definition**
 
 Плагин запускает `dotnet run --project src/TypeScriptDefinitionGenerator.Cli -- <путь-к-файлу>` в каталоге решения.
+
+При успешной генерации плагин автоматически добавляет в .csproj:
+- `TypeScriptDefinitionSource` — для автогенерации при сборке
+- `None` с `DependentUpon` — для отображения в Solution Explorer
+- `Directory.Build.targets` — при первом запуске (если targets есть в `build/`)

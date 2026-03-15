@@ -1,0 +1,16 @@
+<idea-plugin>
+  <id>com.typescriptdefinitiongenerator.rider</id>
+  <name>TypeScript Definition Generator</name>
+  <vendor>TypeScript Definition Generator</vendor>
+  <description>Generate .d.ts files from C# DTO models. Right-click on a .cs file and select "Generate TypeScript Definition" to create a TypeScript definition file.</description>
+  <depends>com.intellij.modules.rider</depends>
+
+  <actions>
+    <action id="TypeScriptDefinitionGenerator.GenerateTypeScriptDefinition"
+            class="com.typescriptdefinitiongenerator.rider.GenerateTypeScriptDefinitionAction"
+            text="Generate TypeScript Definition"
+            description="Generate .d.ts file from C# model">
+      <add-to-group group-id="SolutionExplorerPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>

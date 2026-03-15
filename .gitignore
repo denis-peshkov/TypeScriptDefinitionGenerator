@@ -2,7 +2,6 @@ packages
 sign
 
 **/.idea
-**/rider
 
 # User files
 *.suo
@@ -31,3 +30,4 @@ _NCrunch_WebCompiler
 # Rider plugin build output
 output/
 rider/build/
+rider/.gradle/
