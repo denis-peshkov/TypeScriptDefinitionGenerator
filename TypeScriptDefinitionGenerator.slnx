@@ -9,6 +9,7 @@
   <Folder Name="/assets/">
     <File Path=".gitignore" />
     <File Path="appveyor.yml" />
+    <File Path="build-rider-plugin.ps1" />
     <File Path="build-rider-plugin.sh" />
     <File Path="CHANGELOG.md" />
     <File Path="GitVersion.yml" />
