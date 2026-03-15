@@ -49,7 +49,7 @@ if [ -z "$DOTNET_ONLY" ]; then
     fi
     if $JAVA_CMD -version 2>&1 | grep -qE 'version "1[7-9]|version "2[0-9]'; then
         if [ -f "rider/gradlew" ]; then
-            if (cd rider && export JAVA_HOME="$JAVA_HOME" && ./gradlew buildPlugin -q); then
+            if (cd rider && export JAVA_HOME="$JAVA_HOME" && ./gradlew buildPlugin -Pversion="$VERSION" -q); then
                 KOTLIN_BUILT=1
             else
                 echo "  Kotlin build failed. Run: cd rider && ./gradlew buildPlugin"

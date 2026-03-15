@@ -85,6 +85,20 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+      - name: Increment VSIX version
+        if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+        run: |
+          $manifest = "src/TypeScriptDefinitionGenerator/source.extension.vsixmanifest"
+          $csFile = "src/TypeScriptDefinitionGenerator/source.extension.cs"
+          $vsixVersion = "${{ env.assemblySemVer }}"
+          [xml]$xml = Get-Content $manifest
+          $ns = New-Object System.Xml.XmlNamespaceManager $xml.NameTable
+          $ns.AddNamespace("ns", $xml.DocumentElement.NamespaceURI) | Out-Null
+          $xml.SelectSingleNode("//ns:Identity", $ns).Attributes["Version"].Value = $vsixVersion
+          $xml.Save($manifest)
+          (Get-Content $csFile) -replace 'Version = "[^"]*"', "Version = `"$vsixVersion`"" | Set-Content $csFile
+          echo "VERSION=$vsixVersion" >> $env:GITHUB_ENV
+
       - name: Build VSIX
         run: >
           msbuild $env:SOLUTION \
@@ -95,7 +109,7 @@ jobs:
           /v:m
 
       - name: Build Rider plugin
-        run: bash build-rider-plugin.sh $env:BUILD_CONFIG ${GitVersion_InformationalVersion}
+        run: bash build-rider-plugin.sh $env:BUILD_CONFIG "${{ env.semVer }}"
 
       - name: ref
         run: echo "github.head_ref 1 ${{ github.head_ref }} 2 $GITHUB_REF 3 ${{ github.ref }}"
@@ -128,7 +142,7 @@ jobs:
 
       - name: Publish to marketplaces
         if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-        run: ./publish-marketplace.ps1
+        run: ./publish-marketplace.ps1 -RiderZipPath "output\TypeScriptDefinitionGenerator.Rider-${{ env.semVer }}.zip"
         env:
           VS_MARKETPLACE_PAT: ${{ secrets.VS_MARKETPLACE_PAT }}
           JETBRAINS_MARKETPLACE_TOKEN: ${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
@@ -138,7 +152,7 @@ jobs:
           New-Item -ItemType Directory -Path artifacts -Force
           $vsix = Get-ChildItem -Path . -Filter "*.vsix" -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.FullName -like "*TypeScriptDefinitionGenerator*" -and $_.FullName -notlike "*obj*" } | Select-Object -First 1
           if ($vsix) { Copy-Item $vsix.FullName -Destination "artifacts/TypeScriptDefinitionGenerator.vsix" -Force }
-          if (Test-Path "output/TypeScriptDefinitionGenerator.Rider-${GitVersion_InformationalVersion}.zip") { Copy-Item "output/TypeScriptDefinitionGenerator.Rider-${GitVersion_InformationalVersion}.zip" -Destination "artifacts/" -Force }
+          if (Test-Path "output/TypeScriptDefinitionGenerator.Rider-${{ env.semVer }}.zip") { Copy-Item "output/TypeScriptDefinitionGenerator.Rider-${{ env.semVer }}.zip" -Destination "artifacts/" -Force }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
