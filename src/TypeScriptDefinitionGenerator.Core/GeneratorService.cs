@@ -35,7 +35,11 @@ public static class GeneratorService
 
         if (string.IsNullOrEmpty(dts))
         {
-            log?.Invoke($"No types to generate in {sourceFilePath}");
+            var content = File.ReadAllText(sourceFilePath);
+            var reason = RoslynParser.GetEmptyReason(sourceFilePath, content, options);
+            log?.Invoke(reason != null
+                ? $"{reason} ({sourceFilePath})"
+                : $"No types to generate in {sourceFilePath}");
             return;
         }
 

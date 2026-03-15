@@ -74,6 +74,42 @@ public class RoslynParser
         return new HashSet<IntellisenseObject>(list);
     }
 
+    /// <summary>
+    /// Returns a user-friendly reason why no types were generated, or null if the reason is unknown.
+    /// </summary>
+    public static string? GetEmptyReason(string filePath, string fileContent, IGeneratorOptions options)
+    {
+        var syntaxTree = CSharpSyntaxTree.ParseText(fileContent, path: filePath);
+        var refs = GetDefaultReferences();
+        var compilation = CSharpCompilation.Create(
+            "TempAssembly",
+            new[] { syntaxTree },
+            refs,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var semanticModel = compilation.GetSemanticModel(syntaxTree);
+
+        var typeDecls = syntaxTree.GetRoot().DescendantNodes().OfType<BaseTypeDeclarationSyntax>().ToList();
+        if (typeDecls.Count == 0)
+            return "File has no class or enum declarations.";
+
+        var nonPublicCount = 0;
+        var symbolCount = 0;
+        foreach (var typeDecl in typeDecls)
+        {
+            var symbol = semanticModel.GetDeclaredSymbol(typeDecl, default) as INamedTypeSymbol;
+            if (symbol == null)
+                continue;
+            symbolCount++;
+            if (symbol.DeclaredAccessibility != Accessibility.Public)
+                nonPublicCount++;
+        }
+
+        if (symbolCount > 0 && nonPublicCount == symbolCount)
+            return "File contains only internal or private types. Only public classes and enums are generated.";
+
+        return null;
+    }
+
     private static bool ShouldProcessClass(INamedTypeSymbol symbol)
     {
         return symbol.DeclaredAccessibility == Accessibility.Public && !symbol.IsStatic;
