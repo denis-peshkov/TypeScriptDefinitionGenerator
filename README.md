@@ -123,11 +123,22 @@ dotnet add package TypeScriptDefinitionGenerator.MSBuild
 
 Для использования в Rider см. [README-RIDER.md](README-RIDER.md) — плагин с контекстным меню, External Tool или dotnet tool для генерации .d.ts файлов.
 
-## Сборка расширения
+## Сборка расширения (VSIX)
 
-Расширение использует SDK-style проект (PackageReference). Сборка возможна **только на Windows** с установленной Visual Studio 2022, т.к. VSSDK требует vsct.exe для компиляции меню.
+Сборка возможна **только на Windows** с установленной Visual Studio 2022 (VSSDK требует vsct.exe и т.д.).
 
-При сборке через `dotnet build` для проекта Visual Studio Extension (VSIX) требуется **.NET 8 SDK**: `global.json` в корне репозитория привязывает сборку к SDK 8.0.x (из‑за ограничений VSSDK.BuildTools на .NET 10+). Установите [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) или собирайте расширение из Visual Studio (Build Solution).
+**Рекомендуемый способ:** запустите скрипт в PowerShell (использует MSBuild из VS и избегает проблем с `dotnet build`):
+
+```powershell
+.\build-vsix.ps1        # Debug
+.\build-vsix.ps1 Release
+```
+
+Готовый VSIX будет в `src\TypeScriptDefinitionGenerator\bin\<Configuration>\net472\*.vsix`.
+
+**Установка VSIX на Windows:** дважды щёлкните по файлу `.vsix` или в Visual Studio: **Extensions** → **Manage Extensions** → **Install from VSIX** и укажите собранный файл.
+
+**Альтернатива:** откройте решение в Visual Studio и выполните **Build Solution**. При сборке через `dotnet build` нужен **.NET 8 SDK**: в корне репозитория задан `global.json` для SDK 8.0.x. Установите [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) при необходимости.
 
 ## Contribute
 Check out the [contribution guidelines](.github/CONTRIBUTING.md)

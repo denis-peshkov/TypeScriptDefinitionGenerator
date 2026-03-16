@@ -18,6 +18,8 @@
     <File Path="publish-marketplace.ps1" />
     <File Path="README-RIDER.md" />
     <File Path="README.md" />
+    <File Path="rider/gradlew" />
+    <File Path="rider/gradlew.bat" />
     <File Path="vs-publish.json" />
   </Folder>
   <Project Path="src/TypeScriptDefinitionGenerator.Cli/TypeScriptDefinitionGenerator.Cli.csproj" />

@@ -31,3 +31,5 @@ _NCrunch_WebCompiler
 output/
 rider/build/
 rider/.gradle/
+rider/gradle-truststore.jks
+rider/gradle-local.properties
