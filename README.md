@@ -1,6 +1,19 @@
-# TypeScript Definition Generator
+[![License](https://img.shields.io/github/license/denis-peshkov/TypeScriptDefinitionGenerator)](LICENSE)
+[![GitHub Release Date](https://img.shields.io/github/release-date/denis-peshkov/TypeScriptDefinitionGenerator?label=released)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/releases)
+[![NuGetVersion](https://img.shields.io/nuget/v/TypeScriptDefinitionGenerator.svg)](https://nuget.org/packages/TypeScriptDefinitionGenerator/)
+[![NugetDownloads](https://img.shields.io/nuget/dt/TypeScriptDefinitionGenerator.svg)](https://nuget.org/packages/TypeScriptDefinitionGenerator/)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=TypeScriptDefinitionGenerator&metric=coverage)](https://sonarcloud.io/summary/new_code?id=TypeScriptDefinitionGenerator)
+[![issues](https://img.shields.io/github/issues/denis-peshkov/TypeScriptDefinitionGenerator)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/issues)
+[![.NET PR](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/actions/workflows/dotnet.yml/badge.svg?event=pull_request)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/actions/workflows/dotnet.yml)
 
-[![.NET](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/actions/workflows/dotnet.yml/badge.svg)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/actions/workflows/dotnet.yml)
+![Size](https://img.shields.io/github/repo-size/denis-peshkov/TypeScriptDefinitionGenerator)
+[![GitHub contributors](https://img.shields.io/github/contributors/denis-peshkov/TypeScriptDefinitionGenerator)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/contributors)
+[![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/denis-peshkov/TypeScriptDefinitionGenerator/latest?label=new+commits)](https://github.com/denis-peshkov/TypeScriptDefinitionGenerator/commits/master)
+![Activity](https://img.shields.io/github/commit-activity/w/denis-peshkov/TypeScriptDefinitionGenerator)
+![Activity](https://img.shields.io/github/commit-activity/m/denis-peshkov/TypeScriptDefinitionGenerator)
+![Activity](https://img.shields.io/github/commit-activity/y/denis-peshkov/TypeScriptDefinitionGenerator)
+
+# TypeScript Definition Generator
 
 ## NOTE: This is a customed redistribute
 The orginal repo wrote by @madskristensen, **best regard for him**!

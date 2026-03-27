@@ -7,18 +7,16 @@ on:
   push:
     branches:
       - master
-      - dev
-      - hotfix/*
       - release/*
-      - feature/*
+      - hotfix/*
   pull_request:
     branches:
       - master
-  workflow_dispatch: # <-- вот это даёт ручной запуск
+  workflow_dispatch: # allows manual runs from the Actions tab
 
 jobs:
   build:
-    permissions: # <-- https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#defining-access-for-the-github_token-scopes
+    permissions: # https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#defining-access-for-the-github_token-scopes
       contents: write
 
     env:
@@ -31,11 +29,11 @@ jobs:
         shell: pwsh
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # Disabling shallow clones is recommended for improving the relevancy of reporting
-          fetch-depth: 0
+          fetch-depth: 0 # Disabling shallow clones is recommended for improving the relevancy of reporting
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
@@ -48,7 +46,7 @@ jobs:
           distribution: microsoft
           java-version: "17"
 
-      - name: Install GitVersion
+      - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v1.1.1
         with:
           versionSpec: 5.12.0
@@ -61,26 +59,42 @@ jobs:
       - name: Restore
         run: msbuild $env:SOLUTION /t:restore /p:configuration=$env:BUILD_CONFIG /v:m
 
+      - name: Build
+        run: |
+          dotnet build "$SOLUTION" --configuration "$BUILD_CONFIG" --no-restore \
+            -p:Configuration=$BUILD_CONFIG \
+            -p:Version=${GitVersion_SemVer} \
+            -p:AssemblyVersion=${GitVersion_AssemblySemVer} \
+            -p:FileVersion=${GitVersion_AssemblySemFileVer} \
+            -p:InformationalVersion="${GitVersion_InformationalVersion}" \
+            -p:Company="Denis Peshkov" \
+            -p:Product="src/TypeScriptDefinitionGenerator" \
+            -p:Description="Written on C#." \
+            -p:RepositoryUrl="https://github.com/denis-peshkov/TypeScriptDefinitionGenerator.git" \
+            -p:RepositoryType=git \
+            -p:CLSCompliant=true \
+            -p:NeutralLanguage=en
+
       - name: Run tests
-        run: dotnet test /p:Configuration=$BUILD_CONFIG --no-restore --no-build --verbosity normal
+        run: >
+          dotnet test /p:Configuration=$BUILD_CONFIG
+          --no-restore
+          --no-build
+          --verbosity normal
+          --collect:"XPlat Code Coverage"
+          --results-directory ./TestResults
+          --
+          DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
 
       - name: SonarQube Scan
         uses: sonarsource/sonarcloud-github-action@v5 # Ex: v4.0.0, See the latest version at https://github.com/marketplace/actions/sonarcloud-scan
         with:
-          #          projectBaseDir: app/
-          #          args: >
-          #            -Dsonar.organization=peshkov
-          #            -Dsonar.projectKey=Cross.EdiEngine
-          #            -Dsonar.python.coverage.reportPaths=coverage.xml
-          #            -Dsonar.sources=Cross.EdiEngine/
-          #            -Dsonar.tests=tests/
-          #            -Dsonar.test.exclusions=tests/**
-          #            -Dsonar.verbose=true
           args: >
             -Dsonar.organization=peshkov
-            -Dsonar.projectKey=Cross.EdiEngine
-            -Dsonar.python.coverage.reportPaths=coverage.xml
-            -Dsonar.sources=EdiEngine/
+            -Dsonar.projectKey=TypeScriptDefinitionGenerator
+            -Dsonar.cs.opencover.reportsPaths=TestResults/**/coverage.opencover.xml
+            -Dsonar.sources=src/
+            -Dsonar.tests=tests/
             -Dsonar.verbose=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -135,11 +149,8 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
-      - name: ref
-        run: echo "github.head_ref 1 ${{ github.head_ref }} 2 $GITHUB_REF 3 ${{ github.ref }}"
-
       - name: Create git Tag
-        if: ${{ contains('refs/heads/hotfix', github.ref) || contains('refs/heads/release', github.ref) || contains('refs/heads/master', github.ref) }}
+        if: ${{ contains('refs/heads/master', github.ref) || contains('refs/heads/release', github.ref) || contains('refs/heads/hotfix', github.ref) }}
         run: |
           git tag v${{ env.semVer }}
 

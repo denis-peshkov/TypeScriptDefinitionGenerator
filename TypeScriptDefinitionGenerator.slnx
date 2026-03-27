@@ -1,10 +1,10 @@
 <Solution>
   <Folder Name="/.github/">
-    <File Path=".github\CONTRIBUTING.md" />
-    <File Path=".github\ISSUE_TEMPLATE.md" />
+    <File Path=".github/CONTRIBUTING.md" />
+    <File Path=".github/ISSUE_TEMPLATE.md" />
   </Folder>
   <Folder Name="/.github/workflows/">
-    <File Path=".github\workflows\dotnet.yml" />
+    <File Path=".github/workflows/dotnet.yml" />
   </Folder>
   <Folder Name="/assets/">
     <File Path=".gitignore" />
